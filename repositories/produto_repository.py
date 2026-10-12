@@ -31,3 +31,53 @@ class ProdutoRepository:
 
         cursor.close()
         conexao.close()
+
+
+    def buscar_por_id(self, id_produto):
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        cursor.execute(
+            "SELECT id, nome, preco, quantidade_estoque, ativo "
+            "FROM produtos WHERE id = %s",
+            (id_produto,)
+        )
+        linha = cursor.fetchone()
+
+        cursor.close()
+        conexao.close()
+
+        if linha is None:
+            return None
+
+        return Produto(
+            id=linha[0],
+            nome=linha[1],
+            preco=linha[2],
+            quantidade_estoque=linha[3],
+            ativo=bool(linha[4])
+        )
+
+    def editar(self, produto):
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        sql = """
+            UPDATE produtos
+            SET nome = %s, preco = %s, quantidade_estoque = %s, ativo = %s
+            WHERE id = %s
+        """
+
+        valores = (
+            produto.nome,
+            produto.preco,
+            produto.quantidade_estoque,
+            produto.ativo,
+            produto.id
+        )
+
+        cursor.execute(sql, valores)
+        conexao.commit()
+
+        cursor.close()
+        conexao.close()
