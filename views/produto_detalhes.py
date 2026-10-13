@@ -2,6 +2,8 @@ import streamlit as st
 
 from repositories.produto_repository import ProdutoRepository
 
+from views.produto_editar import mostrar_produto_editar
+
 
 def mostrar_produto_detalhes():
 
@@ -28,3 +30,9 @@ def mostrar_produto_detalhes():
     st.write(
         f"Status: {'Ativo' if produto.ativo else 'Inativo'}"
     )
+
+    if st.button("Editar"):
+        st.session_state["editando_id"] = produto.id
+
+    if st.session_state.get("editando_id") == produto.id:
+        mostrar_produto_editar()
