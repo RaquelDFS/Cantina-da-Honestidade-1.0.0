@@ -1,69 +1,51 @@
-# PARTE DA NICOLE
-# O botão desta página deve estar dentro da página produto_detalhes.py
-# CAMINHO:
-# PÁGINA INICIAL > LISTA > DETALHE DO PRODUTO > EDITAR
 
 import streamlit as st
-
 from repositories.produto_repository import ProdutoRepository
+from models.produto import Produto
 
 
-def mostrar_produto_editar():
-
-    repository = ProdutoRepository()
-
-    id_produto = st.session_state.get("produto_id")
-
-    if id_produto is None:
-        st.error("Nenhum produto foi selecionado.")
-        return
-
-    produto = repository.buscar_por_id(id_produto)
-
-    if produto is None:
-        st.error("Produto não encontrado.")
-        return
-
+def exibir_edicao_produto(produto):
     st.subheader("Editar produto")
 
     with st.form("form_editar_produto"):
-
-        nome = st.text_input(
-            "Nome do produto",
-            value=produto.nome
-        )
+        nome = st.text_input("Nome do produto", value=produto.nome)
 
         preco = st.number_input(
             "Preço",
             min_value=0.0,
+            value=float(produto.preco),
             step=0.01,
-            format="%.2f",
-            value=float(produto.preco)
+            format="%.2f"
         )
 
         quantidade = st.number_input(
             "Quantidade em estoque",
             min_value=0,
-            step=1,
-            value=int(produto.quantidade_estoque)
-        )
-
-        ativo = st.checkbox(
-            "Produto ativo",
-            value=produto.ativo
+            value=int(produto.quantidade_estoque),
+            step=1
         )
 
         salvar = st.form_submit_button("Salvar alterações")
 
-        if salvar:
+    if salvar:
+        if not nome.strip():
+            st.error("Informe o nome do produto.")
+            return
 
-            produto.nome = nome
-            produto.preco = preco
-            produto.quantidade_estoque = quantidade
-            produto.ativo = ativo
+        produto_atualizado = Produto(
+            id=produto.id,
+            nome=nome.strip(),
+            preco=preco,
+            quantidade_estoque=quantidade,
+            ativo=produto.ativo
+        )
 
-            repository.editar(produto)
+        ProdutoRepository().editar(produto_atualizado)
 
-            st.success(
-                f"Produto '{produto.nome}' atualizado com sucesso!"
-            )
+        st.session_state["acao_produto"] = None
+        st.success("Produto atualizado com sucesso!")
+        st.rerun()
+
+    if st.button("Cancelar edição"):
+        st.session_state["acao_produto"] = None
+        st.rerun()

@@ -1,43 +1,29 @@
+
 import streamlit as st
-from models.produto import Produto
-from repositories.produto_repository import ProdutoRepository
 
-repository = ProdutoRepository()
+cadastro = st.Page(
+    "pages/cadastro.py",
+    title="Cadastro",
+    default=True
+)
 
+produtos = st.Page(
+    "pages/produtos.py",
+    title="Produtos"
+)
 
-st.title("Estoque de Doces")
+detalhes = st.Page(
+    "pages/detalhes.py",
+    title="Detalhes do produto",
+    visibility="hidden"
+)
 
-st.subheader("Cadastrar produto")
+pg = st.navigation(
+    {
+        "Menu": [cadastro, produtos],
+        "": [detalhes],
+    },
+    position="sidebar"
+)
 
-with st.form("form_produto"):
-
-    nome = st.text_input("Nome do produto")
-
-    preco = st.number_input(
-        "Preço",
-        min_value=0.0,
-        step=0.01,
-        format="%.2f"
-    )
-
-    quantidade = st.number_input(
-        "Quantidade em estoque",
-        min_value=0,
-        step=1
-    )
-
-    cadastrar = st.form_submit_button("Cadastrar")
-
-    if cadastrar:
-
-        produto = Produto(
-            nome=nome,
-            preco=preco,
-            quantidade_estoque=quantidade
-        )
-
-        repository.cadastrar(produto)
-
-        st.success(
-            f"Produto '{produto.nome}' cadastrado com sucesso!"
-        )
+pg.run()

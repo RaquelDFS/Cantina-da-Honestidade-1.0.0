@@ -81,3 +81,60 @@ class ProdutoRepository:
 
         cursor.close()
         conexao.close()
+
+    def listar(self):
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        try:
+            cursor.execute(
+                "SELECT id, nome, preco, quantidade_estoque, ativo "
+                "FROM produtos"
+            )
+            linhas = cursor.fetchall()
+
+            produtos = []
+
+            for linha in linhas:
+                produto = Produto(
+                    id=linha[0],
+                    nome=linha[1],
+                    preco=linha[2],
+                    quantidade_estoque=linha[3],
+                    ativo=bool(linha[4])
+                )
+                produtos.append(produto)
+
+            return produtos
+
+        finally:
+            cursor.close()
+            conexao.close()
+
+    def excluir(self, id_produto):
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        try:
+            cursor.execute(
+                "DELETE FROM produtos WHERE id = %s",
+                (id_produto,)
+            )
+            conexao.commit()
+        finally:
+            cursor.close()
+            conexao.close()
+
+    def toggle_ativo(self, id_produto):
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        try:
+            cursor.execute(
+                "UPDATE produtos SET ativo = NOT ativo WHERE id = %s",
+                (id_produto,)
+            )
+            conexao.commit()
+        finally:
+            cursor.close()
+            conexao.close()
