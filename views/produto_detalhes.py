@@ -39,7 +39,7 @@ def exibir_produto_detalhes():
         else "Ativar produto"
     )
 
-    if st.button(texto_botao, key="toggle_ativo"):
+    if st.button(texto_botao, key=f"toggle_ativo_{produto.id}"):
         repositorio.toggle_ativo(produto.id)
         st.rerun()
 
@@ -65,6 +65,3 @@ def exibir_produto_detalhes():
         exibir_edicao_produto(produto)
     elif acao == "excluir":
         exibir_confirmacao_exclusao(produto)
-
-
-exibir_produto_detalhes()

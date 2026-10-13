@@ -131,7 +131,15 @@ class ProdutoRepository:
 
         try:
             cursor.execute(
-                "UPDATE produtos SET ativo = NOT ativo WHERE id = %s",
+                """
+                UPDATE produtos
+                SET ativo = CASE
+                    WHEN ativo = TRUE THEN FALSE
+                    WHEN quantidade_estoque > 0 THEN TRUE
+                    ELSE FALSE
+                END
+                WHERE id = %s
+                """,
                 (id_produto,)
             )
             conexao.commit()

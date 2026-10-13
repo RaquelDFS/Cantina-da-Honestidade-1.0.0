@@ -20,7 +20,7 @@ with st.form("form_produto"):
 
     quantidade = st.number_input(
         "Quantidade em estoque",
-        min_value=1,
+        min_value=0,
         step=1
     )
 
@@ -37,7 +37,8 @@ if cadastrar:
         produto = Produto(
             nome=nome.strip(),
             preco=preco,
-            quantidade_estoque=quantidade
+            quantidade_estoque=quantidade,
+            ativo=quantidade > 0
         )
 
         repository.cadastrar(produto)

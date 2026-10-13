@@ -30,21 +30,21 @@ def exibir_edicao_produto(produto):
     if salvar:
         if not nome.strip():
             st.error("Informe o nome do produto.")
-            return
+        elif preco <= 0:
+            st.error("O preço deve ser maior que R$ 0,00.")
+        else:
+            produto_atualizado = Produto(
+                id=produto.id,
+                nome=nome.strip(),
+                preco=preco,
+                quantidade_estoque=quantidade,
+                ativo=quantidade > 0 and produto.ativo
+            )
 
-        produto_atualizado = Produto(
-            id=produto.id,
-            nome=nome.strip(),
-            preco=preco,
-            quantidade_estoque=quantidade,
-            ativo=produto.ativo
-        )
-
-        ProdutoRepository().editar(produto_atualizado)
-
-        st.session_state["acao_produto"] = None
-        st.success("Produto atualizado com sucesso!")
-        st.rerun()
+            ProdutoRepository().editar(produto_atualizado)
+            st.session_state["acao_produto"] = None
+            st.success("Produto atualizado com sucesso!")
+            st.rerun()
 
     if st.button("Cancelar edição"):
         st.session_state["acao_produto"] = None
