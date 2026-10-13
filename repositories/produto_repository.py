@@ -1,10 +1,11 @@
 from database.conexao import conectar
 from models.produto import Produto
 # COLOQUE AS FUNÇÕES AQUI!
-#CADASTRAR
-#LISTAR
-#EDITAR
-#EXCLUIR
+# CADASTRAR
+# LISTAR
+# EDITAR
+# EXCLUIR
+
 
 class ProdutoRepository:
 
@@ -31,7 +32,6 @@ class ProdutoRepository:
 
         cursor.close()
         conexao.close()
-
 
     def buscar_por_id(self, id_produto):
         conexao = conectar()

@@ -1,5 +1,3 @@
-# CRIEI UM ARQUIVO REQUERIMENTS, BASTA USAR O COMANDO pip install -r requirements.txt PARA BAIXAR TODAS AS BIBLIOTECAS NECESSÁRIAS PARA RODAR O PROJETO
-# editem um pouco o streamlit, mudar cores, tamanho das fontes, botoes etc.
 import streamlit as st
 from models.produto import Produto
 from repositories.produto_repository import ProdutoRepository
