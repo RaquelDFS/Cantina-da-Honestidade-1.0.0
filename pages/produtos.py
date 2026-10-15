@@ -17,7 +17,6 @@ def listar_produtos():
         st.info("Nenhum produto cadastrado.")
         return
 
-    # Cabeçalho da tabela
     col_nome, col_preco, col_estoque, col_status, col_botao = st.columns(
         [3, 1, 1, 1, 2]
     )
@@ -28,7 +27,6 @@ def listar_produtos():
     col_status.write("**Status**")
     col_botao.write("**Ações**")
 
-    # Dados dos produtos
     for produto in produtos:
         col_nome, col_preco, col_estoque, col_status, col_botao = st.columns(
             [3, 1, 1, 1, 2]

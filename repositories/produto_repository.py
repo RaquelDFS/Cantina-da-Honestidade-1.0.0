@@ -1,10 +1,5 @@
 from database.conexao import conectar
 from models.produto import Produto
-# COLOQUE AS FUNÇÕES AQUI!
-# CADASTRAR
-# LISTAR
-# EDITAR
-# EXCLUIR
 
 
 class ProdutoRepository:
