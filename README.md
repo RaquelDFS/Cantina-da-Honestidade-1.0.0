@@ -49,16 +49,14 @@ Importante: esse comando mantém a variável configurada apenas na sessão atual
 
 6. Executar o projeto:
 
-python -m streamlit run app.py
+- python -m streamlit run app.py
 
 7. Encerrar a execução:
-
 Para interromper o sistema, volte ao terminal e pressione:
 
-Ctrl + C
+- Ctrl + C
 
 8. Desativar o ambiente virtual:
-
 Execute
 
-deactivate
+- deactivate
