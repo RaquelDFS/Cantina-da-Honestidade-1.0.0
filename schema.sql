@@ -4,7 +4,7 @@ USE estoque;
 
 CREATE TABLE IF NOT EXISTS produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
+    nome VARCHAR(30) NOT NULL,
     preco DECIMAL(10, 2) NOT NULL,
     quantidade_estoque INT NOT NULL DEFAULT 0,
     ativo BOOLEAN NOT NULL DEFAULT TRUE,
