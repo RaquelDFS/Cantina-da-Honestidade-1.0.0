@@ -4,7 +4,7 @@ from repositories.produto_repository import ProdutoRepository
 
 repository = ProdutoRepository()
 
-st.title("Estoque de Doces")
+st.title("Estoque da Cantina da Honestidade")
 st.subheader("Cadastrar produto")
 
 with st.form("form_produto"):
