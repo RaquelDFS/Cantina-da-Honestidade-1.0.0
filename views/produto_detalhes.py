@@ -1,5 +1,6 @@
 import streamlit as st
 from repositories.produto_repository import ProdutoRepository
+from repositories.fornecedor_repository import FornecedorRepository
 from views.produto_editar import exibir_edicao_produto
 from views.produto_excluir import exibir_confirmacao_exclusao
 
@@ -18,6 +19,7 @@ def exibir_produto_detalhes():
         return
 
     repositorio = ProdutoRepository()
+    fornecedor_repo = FornecedorRepository()
     produto = repositorio.buscar_por_id(id_produto)
 
     if produto is None:
@@ -28,6 +30,13 @@ def exibir_produto_detalhes():
     st.write(f"**ID:** {produto.id}")
     st.write(f"**Preço:** R$ {produto.preco:.2f}")
     st.write(f"**Quantidade em estoque:** {produto.quantidade_estoque}")
+
+    if produto.id_fornecedor:
+        fornecedor = fornecedor_repo.buscar_por_id(produto.id_fornecedor)
+        if fornecedor:
+            st.write(f"**Fornecedor:** {fornecedor.nome}")
+            if fornecedor.contato:
+                st.write(f"**Contato:** {fornecedor.contato}")
 
     st.write(
         f"**Status:** {'Ativo' if produto.ativo else 'Inativo'}"

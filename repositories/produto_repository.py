@@ -10,15 +10,16 @@ class ProdutoRepository:
 
         sql = """
             INSERT INTO produtos
-            (nome, preco, quantidade_estoque, ativo)
-            VALUES (%s, %s, %s, %s)
+            (nome, preco, quantidade_estoque, ativo, id_fornecedor)
+            VALUES (%s, %s, %s, %s, %s)
         """
 
         valores = (
             produto.nome,
             produto.preco,
             produto.quantidade_estoque,
-            produto.ativo
+            produto.ativo,
+            produto.id_fornecedor
         )
 
         cursor.execute(sql, valores)
@@ -33,7 +34,7 @@ class ProdutoRepository:
         cursor = conexao.cursor()
 
         cursor.execute(
-            "SELECT id, nome, preco, quantidade_estoque, ativo "
+            "SELECT id, nome, preco, quantidade_estoque, ativo, id_fornecedor "
             "FROM produtos WHERE id = %s",
             (id_produto,)
         )
@@ -50,7 +51,8 @@ class ProdutoRepository:
             nome=linha[1],
             preco=linha[2],
             quantidade_estoque=linha[3],
-            ativo=bool(linha[4])
+            ativo=bool(linha[4]),
+            id_fornecedor=linha[5]
         )
 
     def editar(self, produto):
@@ -59,7 +61,7 @@ class ProdutoRepository:
 
         sql = """
             UPDATE produtos
-            SET nome = %s, preco = %s, quantidade_estoque = %s, ativo = %s
+            SET nome = %s, preco = %s, quantidade_estoque = %s, ativo = %s, id_fornecedor = %s
             WHERE id = %s
         """
 
@@ -68,6 +70,7 @@ class ProdutoRepository:
             produto.preco,
             produto.quantidade_estoque,
             produto.ativo,
+            produto.id_fornecedor,
             produto.id
         )
 
@@ -83,7 +86,7 @@ class ProdutoRepository:
 
         try:
             cursor.execute(
-                "SELECT id, nome, preco, quantidade_estoque, ativo "
+                "SELECT id, nome, preco, quantidade_estoque, ativo, id_fornecedor "
                 "FROM produtos"
             )
             linhas = cursor.fetchall()
@@ -96,7 +99,8 @@ class ProdutoRepository:
                     nome=linha[1],
                     preco=linha[2],
                     quantidade_estoque=linha[3],
-                    ativo=bool(linha[4])
+                    ativo=bool(linha[4]),
+                    id_fornecedor=linha[5]
                 )
                 produtos.append(produto)
 

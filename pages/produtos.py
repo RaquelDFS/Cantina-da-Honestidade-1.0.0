@@ -1,5 +1,6 @@
 import streamlit as st
 from repositories.produto_repository import ProdutoRepository
+from repositories.fornecedor_repository import FornecedorRepository
 
 
 def selecionar_produto(id_produto):
@@ -12,28 +13,31 @@ def listar_produtos():
 
     repositorio = ProdutoRepository()
     produtos = repositorio.listar()
+    fornecedores = {f.id: f.nome for f in FornecedorRepository().listar()}
 
     if not produtos:
         st.info("Nenhum produto cadastrado.")
         return
 
-    col_nome, col_preco, col_estoque, col_status, col_botao = st.columns(
-        [3, 1, 1, 1, 2]
+    col_nome, col_preco, col_fornecedor, col_estoque, col_status, col_botao = st.columns(
+        [3, 1, 2, 1, 1, 2]
     )
 
     col_nome.write("**Nome**")
     col_preco.write("**Preço**")
+    col_fornecedor.write("**Fornecedor**")
     col_estoque.write("**Estoque**")
     col_status.write("**Status**")
     col_botao.write("**Ações**")
 
     for produto in produtos:
-        col_nome, col_preco, col_estoque, col_status, col_botao = st.columns(
-            [3, 1, 1, 1, 2]
+        col_nome, col_preco, col_fornecedor, col_estoque, col_status, col_botao = st.columns(
+            [3, 1, 2, 1, 1, 2]
         )
 
         col_nome.write(produto.nome)
         col_preco.write(f"R$ {produto.preco:.2f}")
+        col_fornecedor.write(fornecedores.get(produto.id_fornecedor, "N/A"))
         col_estoque.write(produto.quantidade_estoque)
 
         if produto.ativo:
