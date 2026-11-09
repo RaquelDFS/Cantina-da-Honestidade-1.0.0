@@ -1,4 +1,6 @@
+
 import streamlit as st
+import unicodedata
 from repositories.produto_repository import ProdutoRepository
 
 
@@ -7,14 +9,88 @@ def selecionar_produto(id_produto):
     st.switch_page("pages/detalhes.py")
 
 
+def normalizar_texto(texto):
+    texto = texto.lower()
+    texto = unicodedata.normalize("NFD", texto)
+
+    texto = "".join(
+        letra for letra in texto
+        if unicodedata.category(letra) != "Mn"
+    )
+
+    return texto
+
+
 def listar_produtos():
     st.title("Produtos")
 
     repositorio = ProdutoRepository()
     produtos = repositorio.listar()
 
+    busca = st.text_input("Buscar produto pelo nome")
+
+    col_filtro, col_ordem = st.columns(2)
+
+    with col_filtro:
+        status = st.selectbox(
+            "Filtrar por status",
+            ["Ativos", "Inativos", "Todos"]
+        )
+
+    with col_ordem:
+        ordenacao = st.selectbox(
+            "Ordenar produtos por",
+            [
+                "Menor estoque primeiro",
+                "Maior estoque primeiro",
+                "Nome (A-Z)",
+                "Nome (Z-A)"
+            ]
+        )
+
+    produtos_filtrados = []
+
+    for produto in produtos:
+        nome_encontrado = (
+            normalizar_texto(busca) in normalizar_texto(produto.nome)
+        )
+
+        if status == "Ativos":
+            status_encontrado = produto.ativo
+        elif status == "Inativos":
+            status_encontrado = not produto.ativo
+        else:
+            status_encontrado = True
+
+        if nome_encontrado and status_encontrado:
+            produtos_filtrados.append(produto)
+
+    produtos = produtos_filtrados
+
+    if ordenacao == "Menor estoque primeiro":
+        produtos.sort(
+            key=lambda produto: produto.quantidade_estoque
+        )
+
+    elif ordenacao == "Maior estoque primeiro":
+        produtos.sort(
+            key=lambda produto: produto.quantidade_estoque,
+            reverse=True
+        )
+
+    elif ordenacao == "Nome (A-Z)":
+        produtos.sort(
+            key=lambda produto: normalizar_texto(produto.nome)
+        )
+
+    elif ordenacao == "Nome (Z-A)":
+        produtos.sort(
+            key=lambda produto: normalizar_texto(produto.nome),
+            reverse=True
+        )
+
     if not produtos:
-        st.info("Nenhum produto cadastrado.")
+        st.info("Nenhum produto encontrado.")
         return
 
     col_nome, col_preco, col_estoque, col_status, col_botao = st.columns(

@@ -1,3 +1,4 @@
+
 import streamlit as st
 from repositories.produto_repository import ProdutoRepository
 from models.produto import Produto
@@ -37,7 +38,7 @@ def exibir_edicao_produto(produto):
                 nome=nome.strip(),
                 preco=preco,
                 quantidade_estoque=quantidade,
-                ativo=quantidade > 0 and produto.ativo
+                ativo=produto.ativo
             )
 
             ProdutoRepository().editar(produto_atualizado)

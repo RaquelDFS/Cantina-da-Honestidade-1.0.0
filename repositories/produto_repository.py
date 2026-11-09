@@ -1,3 +1,4 @@
+
 from database.conexao import conectar
 from models.produto import Produto
 
@@ -37,6 +38,7 @@ class ProdutoRepository:
             "FROM produtos WHERE id = %s",
             (id_produto,)
         )
+
         linha = cursor.fetchone()
 
         cursor.close()
@@ -59,7 +61,8 @@ class ProdutoRepository:
 
         sql = """
             UPDATE produtos
-            SET nome = %s, preco = %s, quantidade_estoque = %s, ativo = %s
+            SET nome = %s, preco = %s,
+                quantidade_estoque = %s, ativo = %s
             WHERE id = %s
         """
 
@@ -86,8 +89,8 @@ class ProdutoRepository:
                 "SELECT id, nome, preco, quantidade_estoque, ativo "
                 "FROM produtos"
             )
-            linhas = cursor.fetchall()
 
+            linhas = cursor.fetchall()
             produtos = []
 
             for linha in linhas:
@@ -106,20 +109,6 @@ class ProdutoRepository:
             cursor.close()
             conexao.close()
 
-    def excluir(self, id_produto):
-        conexao = conectar()
-        cursor = conexao.cursor()
-
-        try:
-            cursor.execute(
-                "DELETE FROM produtos WHERE id = %s",
-                (id_produto,)
-            )
-            conexao.commit()
-        finally:
-            cursor.close()
-            conexao.close()
-
     def toggle_ativo(self, id_produto):
         conexao = conectar()
         cursor = conexao.cursor()
@@ -128,16 +117,18 @@ class ProdutoRepository:
             cursor.execute(
                 """
                 UPDATE produtos
-                SET ativo = CASE
-                    WHEN ativo = TRUE THEN FALSE
-                    WHEN quantidade_estoque > 0 THEN TRUE
-                    ELSE FALSE
-                END
+                SET ativo = NOT ativo
                 WHERE id = %s
+                AND (ativo = FALSE OR quantidade_estoque = 0)
                 """,
                 (id_produto,)
             )
+
+            alterado = cursor.rowcount
             conexao.commit()
+
+            return alterado > 0
+
         finally:
             cursor.close()
             conexao.close()
