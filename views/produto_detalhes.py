@@ -1,7 +1,7 @@
+
 import streamlit as st
 from repositories.produto_repository import ProdutoRepository
 from views.produto_editar import exibir_edicao_produto
-from views.produto_excluir import exibir_confirmacao_exclusao
 
 
 def exibir_produto_detalhes():
@@ -39,19 +39,29 @@ def exibir_produto_detalhes():
     )
 
     if st.button(texto_botao, key=f"toggle_ativo_{produto.id}"):
-        repositorio.toggle_ativo(produto.id)
-        st.rerun()
+
+        if produto.ativo and produto.quantidade_estoque > 0:
+            st.warning(
+                "Não é possível desativar um produto com estoque disponível."
+            )
+        else:
+            alterado = repositorio.toggle_ativo(produto.id)
+
+            if alterado:
+                st.success("Status do produto atualizado com sucesso!")
+                st.rerun()
+            else:
+                st.warning(
+                    "Não foi possível alterar o status. "
+                    "Verifique a quantidade em estoque."
+                )
 
     st.divider()
 
-    col_editar, col_excluir, col_voltar = st.columns(3)
+    col_editar, col_voltar = st.columns(2)
 
     if col_editar.button("Editar", use_container_width=True):
         st.session_state["acao_produto"] = "editar"
-        st.rerun()
-
-    if col_excluir.button("Excluir", use_container_width=True):
-        st.session_state["acao_produto"] = "excluir"
         st.rerun()
 
     if col_voltar.button("Voltar", use_container_width=True):
@@ -62,5 +72,3 @@ def exibir_produto_detalhes():
 
     if acao == "editar":
         exibir_edicao_produto(produto)
-    elif acao == "excluir":
-        exibir_confirmacao_exclusao(produto)
