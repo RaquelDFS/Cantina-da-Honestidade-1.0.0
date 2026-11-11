@@ -1,8 +1,10 @@
 import streamlit as st
 from models.produto import Produto
 from repositories.produto_repository import ProdutoRepository
+from repositories.fornecedor_repository import FornecedorRepository
 
 repository = ProdutoRepository()
+fornecedor_repository = FornecedorRepository()
 
 st.title("Estoque da Cantina da Honestidade")
 st.subheader("Cadastrar produto")
@@ -25,6 +27,14 @@ with st.form("form_produto"):
 
     )
 
+    fornecedores = fornecedor_repository.listar()
+    opcoes_fornecedor = {f.nome: f.id for f in fornecedores}
+    fornecedor_selecionado = st.selectbox(
+        "Fornecedor",
+        options=opcoes_fornecedor.keys(),
+        index=0 if opcoes_fornecedor else None
+    )
+
     cadastrar = st.form_submit_button("Cadastrar")
 
 if cadastrar:
@@ -41,7 +51,8 @@ if cadastrar:
             nome=nome.strip(),
             preco=preco,
             quantidade_estoque=quantidade,
-            ativo=quantidade > 0
+            ativo=quantidade > 0,
+            id_fornecedor=opcoes_fornecedor.get(fornecedor_selecionado)
         )
 
         repository.cadastrar(produto)
