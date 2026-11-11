@@ -1,3 +1,4 @@
+
 import streamlit as st
 from repositories.produto_repository import ProdutoRepository
 from repositories.fornecedor_repository import FornecedorRepository
@@ -59,8 +60,8 @@ def exibir_edicao_produto(produto):
                 nome=nome.strip(),
                 preco=preco,
                 quantidade_estoque=quantidade,
-                ativo=quantidade > 0 and produto.ativo,
-                id_fornecedor=opcoes_fornecedor.get(fornecedor_selecionado)
+                id_fornecedor=opcoes_fornecedor.get(fornecedor_selecionado),
+                ativo=produto.ativo
             )
 
             ProdutoRepository().editar(produto_atualizado)
