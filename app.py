@@ -1,4 +1,15 @@
+
 import streamlit as st
+
+from database.inicializar import inicializar_banco
+
+
+@st.cache_resource
+def preparar_banco():
+    inicializar_banco()
+
+
+preparar_banco()
 
 cadastro = st.Page(
     "pages/cadastro.py",
@@ -11,16 +22,16 @@ produtos = st.Page(
     title="Produtos"
 )
 
-detalhes = st.Page(
-    "pages/detalhes.py",
-    title="Detalhes do produto",
+editar = st.Page(
+    "pages/editar.py",
+    title="Editar produto",
     visibility="hidden"
 )
 
 pg = st.navigation(
     {
         "Menu": [cadastro, produtos],
-        "": [detalhes],
+        "": [editar],
     },
     position="sidebar"
 )
