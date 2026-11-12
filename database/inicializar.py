@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 
@@ -24,23 +23,6 @@ def inicializar_banco():
 
             if comando:
                 cursor.execute(comando)
-
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM information_schema.TABLE_CONSTRAINTS
-            WHERE CONSTRAINT_SCHEMA = 'estoque'
-              AND TABLE_NAME = 'produtos'
-              AND CONSTRAINT_NAME = 'chk_estoque_ativo'
-              AND CONSTRAINT_TYPE = 'CHECK'
-        """)
-
-        existe_restricao = cursor.fetchone()[0] > 0
-
-        if existe_restricao:
-            cursor.execute("""
-                ALTER TABLE estoque.produtos
-                DROP CHECK chk_estoque_ativo
-            """)
 
         conexao.commit()
 
