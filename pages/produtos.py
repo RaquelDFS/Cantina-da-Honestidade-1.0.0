@@ -6,7 +6,7 @@ from repositories.produto_repository import ProdutoRepository
 
 def selecionar_produto(id_produto):
     st.session_state["produto_id"] = id_produto
-    st.switch_page("pages/detalhes.py")
+    st.switch_page("pages/editar.py")
 
 
 def normalizar_texto(texto):
@@ -118,10 +118,11 @@ def listar_produtos():
             col_status.write("🔴")
 
         col_botao.button(
-            "Ver detalhes",
-            key=f"ver_{produto.id}",
+            "Editar",
+            key=f"editar_{produto.id}",
             on_click=selecionar_produto,
             args=(produto.id,),
+            use_container_width=True
         )
 
 
