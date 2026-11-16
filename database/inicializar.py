@@ -1,49 +1,62 @@
-
-import os
-from pathlib import Path
-
 import mysql.connector
+from pathlib import Path
+config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "MYSQL_PASSWORD"
+}
 
 
 def inicializar_banco():
-    caminho_schema = Path(__file__).resolve().parent.parent / "schema.sql"
 
-    conexao = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password=os.getenv("MYSQL_PASSWORD")
-    )
-
-    cursor = conexao.cursor()
+    conexao = None
+    cursor = None
 
     try:
-        comandos_sql = caminho_schema.read_text(encoding="utf-8")
+        conexao = mysql.connector.connect(**config)
+        cursor = conexao.cursor()
 
-        for comando in comandos_sql.split(";"):
-            comando = comando.strip()
+        caminho = Path(__file__).with_name("schema.sql")
+        schema = caminho.read_text(encoding="utf-8")
 
-            if comando:
+        comandos = schema.split(";")
+
+        for comando in comandos:
+            if comando.strip():
                 cursor.execute(comando)
-
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM information_schema.TABLE_CONSTRAINTS
-            WHERE CONSTRAINT_SCHEMA = 'estoque'
-              AND TABLE_NAME = 'produtos'
-              AND CONSTRAINT_NAME = 'chk_estoque_ativo'
-              AND CONSTRAINT_TYPE = 'CHECK'
-        """)
-
-        existe_restricao = cursor.fetchone()[0] > 0
-
-        if existe_restricao:
-            cursor.execute("""
-                ALTER TABLE estoque.produtos
-                DROP CHECK chk_estoque_ativo
-            """)
 
         conexao.commit()
 
+        print("Banco de dados inicializado com sucesso!")
+        return True
+
+    except mysql.connector.Error as erro:
+        if conexao:
+            conexao.rollback()
+
+        print(f"Erro ao inicializar banco: {erro}")
+        return False
+
+    except OSError as erro:
+        print(f"Erro ao ler o arquivo schema.sql: {erro}")
+        return False
+
     finally:
-        cursor.close()
-        conexao.close()
+        if cursor:
+            cursor.close()
+
+        if conexao and conexao.is_connected():
+            conexao.close()
+
+
+def conectar():
+
+    try:
+        return mysql.connector.connect(
+            database="cantina_honestidade",
+            **config
+        )
+
+    except mysql.connector.Error as erro:
+        print(f"Erro na conexão com o banco: {erro}")
+        return None

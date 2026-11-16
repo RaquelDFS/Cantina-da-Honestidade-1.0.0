@@ -7,7 +7,7 @@ def conectar():
         host="localhost",
         user="root",
         password=os.getenv("MYSQL_PASSWORD"),
-        database="estoque"
+        database="cantina_honestidade"
     )
 
     return conexao
