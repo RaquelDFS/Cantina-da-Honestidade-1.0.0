@@ -1,3 +1,4 @@
+
 import streamlit as st
 from streamlit_cookies_controller import CookieController
 from database.inicializar import conectar
@@ -6,12 +7,12 @@ from views.login import tela_login
 from views.cliente_cadastro import tela_cadastro_cliente
 from views.menu_lateral import menu_lateral
 from views.cliente_inicio import tela_cliente_inicio
+from views.cliente_loja import tela_cliente_loja
 from views.admin_inicio import tela_admin_inicio
 from views.gerente_inicio import tela_gerente_inicio
 from views.produto_cadastro import tela_produto_cadastro
 from views.admin_produtos_visualizar import tela_admin_produtos_visualizar
 from views.gerente_produtos_visualizar import tela_gerente_produtos_visualizar
-from views.produto_cadastro import tela_produto_cadastro
 from views.cliente_adicionar_credito import tela_cliente_adicionar_credito
 from views.admin_produto_editar import tela_admin_produto_editar
 from views.gerente_estoque_movimentar import tela_gerente_estoque_movimentar
@@ -20,6 +21,7 @@ import time
 
 
 if "banco_inicializado" not in st.session_state:
+
     if not inicializar_banco():
         st.error("Não foi possível inicializar o banco.")
         st.stop()
@@ -35,6 +37,7 @@ if "usuario" not in st.session_state:
 
 
 cookies = CookieController(key="cookies")
+
 if "cookies_carregados" not in st.session_state:
 
     cookies.getAll()
@@ -67,6 +70,7 @@ if st.session_state.usuario is None:
         if usuario:
             st.session_state.usuario = usuario
             st.session_state.pagina = "inicio"
+
 
 menu_lateral(cookies)
 
@@ -105,7 +109,7 @@ elif st.session_state.pagina == "produto_cadastro":
 
     if (
         st.session_state.usuario is not None
-        and st.session_state.usuario["perfil"] in ["administrador"]
+        and st.session_state.usuario["perfil"] == "administrador"
     ):
         tela_produto_cadastro()
 
@@ -113,16 +117,27 @@ elif st.session_state.pagina == "admin_produtos_visualizar":
 
     if (
         st.session_state.usuario is not None
-        and st.session_state.usuario["perfil"] in ["administrador"]
+        and st.session_state.usuario["perfil"] == "administrador"
     ):
         tela_admin_produtos_visualizar()
+
 elif st.session_state.pagina == "gerente_produtos_visualizar":
 
     if (
         st.session_state.usuario is not None
-        and st.session_state.usuario["perfil"] in ["gerente"]
+        and st.session_state.usuario["perfil"] == "gerente"
     ):
         tela_gerente_produtos_visualizar()
+
+elif st.session_state.pagina == "cliente_loja":
+
+    if (
+        st.session_state.usuario is not None
+        and st.session_state.usuario["perfil"] == "cliente"
+    ):
+        tela_cliente_loja()
+    else:
+        st.error("Acesso não autorizado.")
 
 elif st.session_state.pagina == "cliente_adicionar_credito":
 
@@ -135,6 +150,7 @@ elif st.session_state.pagina == "cliente_adicionar_credito":
         st.error("Acesso não autorizado.")
 
 elif st.session_state.pagina == "admin_produto_editar":
+
     if (
         st.session_state.usuario
         and st.session_state.usuario["perfil"] == "administrador"
@@ -144,6 +160,7 @@ elif st.session_state.pagina == "admin_produto_editar":
         st.error("Acesso não autorizado.")
 
 elif st.session_state.pagina == "gerente_estoque_movimentar":
+
     if (
         st.session_state.usuario
         and st.session_state.usuario["perfil"] == "gerente"
@@ -151,10 +168,13 @@ elif st.session_state.pagina == "gerente_estoque_movimentar":
         tela_gerente_estoque_movimentar()
     else:
         st.error("Acesso não autorizado.")
+
 elif st.session_state.pagina == "admin_estoque_visualizar":
+
     if (
         st.session_state.usuario
-        and st.session_state.usuario["perfil"] in ["administrador", "gerente"]
+        and st.session_state.usuario["perfil"]
+        in ["administrador", "gerente"]
     ):
         tela_admin_estoque_visualizar()
     else:
