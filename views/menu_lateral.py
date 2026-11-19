@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 
@@ -14,9 +13,7 @@ def menu_lateral(cookies):
         st.title(f"Olá, {usuario['nome']}!")
 
         if usuario["perfil"] in ["administrador", "gerente"]:
-            st.caption(
-                f"Perfil: {usuario['perfil'].capitalize()}"
-            )
+            st.caption(f"Perfil: {usuario['perfil'].capitalize()}")
 
         st.divider()
 
@@ -29,17 +26,11 @@ def menu_lateral(cookies):
 
             st.subheader("Produtos")
 
-            if st.button(
-                "Cadastrar produto",
-                use_container_width=True
-            ):
+            if st.button("Cadastrar produto", use_container_width=True):
                 st.session_state.pagina = "produto_cadastro"
                 st.rerun()
 
-            if st.button(
-                "Ver Produtos",
-                use_container_width=True
-            ):
+            if st.button("Ver Produtos", use_container_width=True):
                 st.session_state.pagina = "admin_produtos_visualizar"
                 st.rerun()
 
@@ -48,17 +39,11 @@ def menu_lateral(cookies):
 
             st.subheader("Produtos")
 
-            if st.button(
-                "Ver Produtos",
-                use_container_width=True
-            ):
+            if st.button("Ver Produtos", use_container_width=True):
                 st.session_state.pagina = "gerente_produtos_visualizar"
                 st.rerun()
 
-            if st.button(
-                "Editar produto",
-                use_container_width=True
-            ):
+            if st.button("Editar produto", use_container_width=True):
                 st.session_state.pagina = "gerente_estoque_movimentar"
                 st.rerun()
 
@@ -67,29 +52,26 @@ def menu_lateral(cookies):
 
             st.subheader("Estoque")
 
-            if st.button(
-                "Movimentações de estoque",
-                use_container_width=True
-            ):
+            if st.button("Movimentações de estoque", use_container_width=True):
                 st.session_state.pagina = "admin_estoque_visualizar"
                 st.rerun()
 
         # Opções exclusivas de cliente
         if usuario["perfil"] == "cliente":
 
-            if st.button(
-                "Loja",
-                use_container_width=True
-            ):
+            st.subheader("Compras")
+
+            if st.button("Loja", use_container_width=True):
                 st.session_state.pagina = "cliente_loja"
+                st.rerun()
+
+            if st.button("Histórico de compras", use_container_width=True):
+                st.session_state.pagina = "cliente_historico_compras"
                 st.rerun()
 
             st.subheader("Minha carteira")
 
-            if st.button(
-                "Adicionar Crédito",
-                use_container_width=True
-            ):
+            if st.button("Adicionar Crédito", use_container_width=True):
                 st.session_state.pagina = "cliente_adicionar_credito"
                 st.rerun()
 
