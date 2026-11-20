@@ -34,6 +34,13 @@ def menu_lateral(cookies):
                 st.session_state.pagina = "admin_produtos_visualizar"
                 st.rerun()
 
+            # P04 - Gestão de usuários
+            st.subheader("Usuários")
+
+            if st.button("Gerenciar usuários", use_container_width=True):
+                st.session_state.pagina = "admin_usuarios"
+                st.rerun()
+
         # Opções exclusivas de gerente
         if usuario["perfil"] == "gerente":
 
