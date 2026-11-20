@@ -1,27 +1,38 @@
 
 import streamlit as st
 from database.inicializar import conectar
+from controllers.validacoes import TAMANHO_FORNECEDOR, TAMANHO_NOME_PRODUTO
 
 
 def tela_produto_cadastro():
 
     usuario = st.session_state.get("usuario")
 
-    if not usuario or usuario.get("perfil") not in ["administrador", "gerente"]:
-        st.error("Você não tem permissão para cadastrar produtos.")
+    # RN04: apenas o administrador pode cadastrar produtos.
+    if not usuario or usuario.get("perfil") != "administrador":
+        st.error("Apenas administradores podem cadastrar produtos.")
         return
 
     st.title("Cadastro de produtos")
     st.write("Preencha os dados para cadastrar um novo produto.")
+    st.caption("Campos com * são obrigatórios.")
 
     st.divider()
 
     # Informações do produto
     st.subheader("Informações do produto")
 
-    nome = st.text_input("Nome do produto", max_chars=50)
-    descricao = st.text_area("Descrição")
-    fornecedor = st.text_input("Fornecedor atual", max_chars=150)
+    nome = st.text_input(
+        "Nome do produto *",
+        max_chars=TAMANHO_NOME_PRODUTO,
+        placeholder="Ex.: Café 250g"
+    )
+    descricao = st.text_area("Descrição", max_chars=500)
+    fornecedor = st.text_input(
+        "Fornecedor atual *",
+        max_chars=TAMANHO_FORNECEDOR,
+        placeholder="Ex.: Atacadão"
+    )
 
     st.divider()
 
@@ -32,7 +43,7 @@ def tela_produto_cadastro():
 
     with col1:
         valor_compra = st.number_input(
-            "Valor de compra unitário (R$)",
+            "Valor de compra unitário (R$) *",
             min_value=0.01,
             value=0.01,
             step=0.01,
@@ -42,8 +53,10 @@ def tela_produto_cadastro():
 
     with col2:
         percentual = st.number_input(
-            "Percentual de contribuição (%)",
+            "Percentual de contribuição (%) *",
             min_value=0.0,
+            max_value=100.0,
+            help="Entre 0% e 100%. O preço mínimo é calculado automaticamente.",
             value=0.0,
             step=0.5,
             format="%.2f",
@@ -52,8 +65,8 @@ def tela_produto_cadastro():
 
     with col3:
         quantidade = st.number_input(
-            "Quantidade em estoque",
-            min_value=0,
+            "Quantidade inicial em estoque *",
+            min_value=1,
             value=1,
             step=1,
             key="quantidade"
@@ -168,11 +181,12 @@ def tela_produto_cadastro():
             # 3. Confirmar as duas operações
             conexao.commit()
 
-            st.success("Produto cadastrado com sucesso!")
+            st.success(f"Produto '{nome.strip()}' cadastrado com sucesso!")
 
         except Exception as erro:
             conexao.rollback()
-            st.error(f"Erro ao cadastrar produto: {erro}")
+            print(f"Erro ao cadastrar produto: {erro}")
+            st.error("Não foi possível cadastrar o produto. Confira os dados e tente novamente.")
 
         finally:
             if cursor:

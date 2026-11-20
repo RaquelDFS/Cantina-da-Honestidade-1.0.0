@@ -1,5 +1,6 @@
 
 import streamlit as st
+from views.mensagens import mostrar_aviso
 from database.inicializar import conectar
 from views.filtros_produtos import filtros_produtos
 
@@ -14,6 +15,7 @@ def tela_admin_produtos_visualizar():
         return
 
     st.title("Produtos cadastrados")
+    mostrar_aviso()
     st.divider()
 
     # Buscar produtos no banco

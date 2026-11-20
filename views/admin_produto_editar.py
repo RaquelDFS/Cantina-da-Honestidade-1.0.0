@@ -1,6 +1,8 @@
 
 import streamlit as st
 from database.inicializar import conectar
+from views.mensagens import avisar
+from controllers.validacoes import TAMANHO_FORNECEDOR, TAMANHO_NOME_PRODUTO
 
 
 def tela_admin_produto_editar():
@@ -54,13 +56,15 @@ def tela_admin_produto_editar():
         st.subheader("Informações do produto")
 
         nome = st.text_input(
-            "Nome do produto",
-            value=produto["nome"] or ""
+            "Nome do produto *",
+            value=produto["nome"] or "",
+            max_chars=TAMANHO_NOME_PRODUTO
         )
 
         descricao = st.text_area(
             "Descrição",
-            value=produto["descricao"] or ""
+            value=produto["descricao"] or "",
+            max_chars=500
         )
 
         # ==========================================
@@ -81,7 +85,8 @@ def tela_admin_produto_editar():
         percentual = st.number_input(
             "Percentual de contribuição (%)",
             min_value=0.0,
-            value=float(produto["percentual_contribuicao"]),
+            max_value=100.0,
+            value=min(100.0, float(produto["percentual_contribuicao"])),
             step=0.5,
             format="%.2f"
         )
@@ -107,7 +112,8 @@ def tela_admin_produto_editar():
 
         fornecedor = st.text_input(
             "Fornecedor atual",
-            value=produto["fornecedor_atual"] or ""
+            value=produto["fornecedor_atual"] or "",
+            max_chars=TAMANHO_FORNECEDOR
         )
 
         status_atual = produto["status"]
@@ -201,7 +207,8 @@ def tela_admin_produto_editar():
 
                     conexao.commit()
 
-                    st.success("Produto atualizado com sucesso!")
+                    # Mostrada na listagem, depois do rerun.
+                    avisar(f"Produto '{nome.strip()}' atualizado com sucesso!")
 
                     del st.session_state["id_produto_editar"]
 
@@ -210,7 +217,8 @@ def tela_admin_produto_editar():
 
                 except Exception as erro:
                     conexao.rollback()
-                    st.error(f"Erro ao atualizar produto: {erro}")
+                    print(f"Erro ao atualizar produto: {erro}")
+                    st.error("Não foi possível salvar as alterações. Tente novamente.")
 
     finally:
         cursor.close()
