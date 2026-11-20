@@ -1,6 +1,7 @@
 import streamlit as st
 
 st.set_page_config(page_title="Cantina da Honestidade", layout="wide")
+
 from streamlit_cookies_controller import CookieController
 from database.inicializar import conectar
 from database.inicializar import inicializar_banco
@@ -10,6 +11,7 @@ from views.menu_lateral import menu_lateral
 from views.cliente_inicio import tela_cliente_inicio
 from views.cliente_loja import tela_cliente_loja
 from views.cliente_finalizar_compra import tela_cliente_finalizar_compra
+from views.cliente_historico_compras import tela_cliente_historico_compras
 from views.admin_inicio import tela_admin_inicio
 from views.gerente_inicio import tela_gerente_inicio
 from views.produto_cadastro import tela_produto_cadastro
@@ -63,7 +65,7 @@ if st.session_state.usuario is None:
             FROM usuarios
             WHERE id_usuario = %s
               AND status = 'ativo'
-        """,
+            """,
             (id_usuario,),
         )
 
@@ -199,6 +201,16 @@ elif st.session_state.pagina == "cliente_finalizar_compra":
         and st.session_state.usuario["perfil"] == "cliente"
     ):
         tela_cliente_finalizar_compra()
+    else:
+        st.error("Acesso não autorizado.")
+
+elif st.session_state.pagina == "cliente_historico_compras":
+
+    if (
+        st.session_state.usuario is not None
+        and st.session_state.usuario["perfil"] == "cliente"
+    ):
+        tela_cliente_historico_compras()
     else:
         st.error("Acesso não autorizado.")
 

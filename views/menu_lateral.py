@@ -66,8 +66,14 @@ def menu_lateral(cookies):
         # Opções exclusivas de cliente
         if usuario["perfil"] == "cliente":
 
+            st.subheader("Compras")
+
             if st.button("Loja", use_container_width=True):
                 st.session_state.pagina = "cliente_loja"
+                st.rerun()
+
+            if st.button("Histórico de compras", use_container_width=True):
+                st.session_state.pagina = "cliente_historico_compras"
                 st.rerun()
 
             st.subheader("Minha carteira")
