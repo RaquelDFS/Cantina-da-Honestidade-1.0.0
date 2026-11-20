@@ -5,6 +5,15 @@ import hmac
 import secrets
 import base64
 
+from controllers.validacoes import (
+    SENHA_MAXIMO,
+    SENHA_MINIMO,
+    TAMANHO_EMAIL,
+    TAMANHO_NOME_USUARIO,
+    email_valido,
+    matricula_valida,
+)
+
 
 def gerar_hash(senha):
     salt = secrets.token_bytes(16)
@@ -57,11 +66,29 @@ def cadastrar_cliente(conexao, nome, email, senha, matricula):
         if not nome or not email:
             return False, "Preencha todos os campos."
 
-        if len(senha) < 10 or len(senha) > 20:
-            return False, "A senha deve ter entre 10 e 20 caracteres."
+        if len(nome) > TAMANHO_NOME_USUARIO:
+            return False, f"O nome pode ter no máximo {TAMANHO_NOME_USUARIO} caracteres."
 
-        if not matricula.isdigit() or len(matricula) != 7:
+        if len(email) > TAMANHO_EMAIL or not email_valido(email):
+            return False, "Informe um e-mail válido. Exemplo: nome@email.com"
+
+        if len(senha) < SENHA_MINIMO or len(senha) > SENHA_MAXIMO:
+            return False, (
+                f"A senha deve ter entre {SENHA_MINIMO} e {SENHA_MAXIMO} caracteres."
+            )
+
+        if not matricula_valida(matricula):
             return False, "A matrícula deve conter 7 números."
+
+        # A coluna matricula não é UNIQUE no banco, mas o login é feito
+        # pela matrícula. Então não pode existir duas pessoas com a mesma.
+        cursor.execute(
+            "SELECT 1 FROM usuarios WHERE matricula = %s",
+            (matricula,)
+        )
+
+        if cursor.fetchone():
+            return False, "Esta matrícula já está cadastrada."
 
         senha_armazenada = gerar_hash(senha)
 
@@ -91,11 +118,13 @@ def cadastrar_cliente(conexao, nome, email, senha, matricula):
 
     except mysql.connector.IntegrityError:
         conexao.rollback()
-        return False, "E-mail ou matrícula já cadastrados."
+        return False, "Este e-mail já está cadastrado."
 
     except mysql.connector.Error as erro:
         conexao.rollback()
-        return False, f"Erro ao cadastrar: {erro}"
+        # O detalhe técnico vai para o terminal; o usuário vê uma mensagem clara.
+        print(f"Erro ao cadastrar cliente: {erro}")
+        return False, "Não foi possível concluir o cadastro. Tente novamente."
 
     finally:
         cursor.close()

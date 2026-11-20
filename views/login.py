@@ -3,6 +3,7 @@ import time
 
 from database.inicializar import conectar
 from controllers.usuario_controller import autenticar_usuario
+from views.mensagens import mostrar_aviso
 
 
 def tela_login(cookies):
@@ -10,7 +11,9 @@ def tela_login(cookies):
     st.title("Cantina da Honestidade")
     st.subheader("Faça seu login")
 
-    matricula = st.text_input("Matrícula")
+    mostrar_aviso()
+
+    matricula = st.text_input("Matrícula", max_chars=7, placeholder="7 números")
     senha = st.text_input("Senha", type="password")
 
     if st.button("Entrar", use_container_width=True):
