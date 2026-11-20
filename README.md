@@ -1,11 +1,13 @@
-﻿
-# Cantina da Honestidade 1.0.0
+﻿# Cantina da Honestidade 1.0.0
 
 Sistema de gestão para a Cantina da Honestidade do SENAI Fraiburgo, com controle de usuários, créditos, compras e movimentações financeiras.
 
 **Curso:** Superior de Tecnologia em Análise e Desenvolvimento de Sistemas (ADS)
+
 **Turma:** GR ADSI 2025/2 1
+
 **Unidade Curricular:** Projeto Aplicado II (AEx) - 474830
+
 **Instituição:** SENAI/SC - Fraiburgo
 
 ## 1. Contextualização
@@ -58,20 +60,18 @@ Antes de instalar o projeto, é necessário possuir:
 
 Também é necessário conhecer a senha do usuário `root` do MySQL.
 
-Os comandos apresentados neste documento utilizam o **PowerShell do Windows**.
+Os comandos apresentados neste documento utilizam o ****PowerShell do Windows****.
 
 ## 4. Instalação do projeto
 
 ### 4.1. Clonar o repositório
 
 Abra o PowerShell e execute:
-
 ```powershell
 git clone https://github.com/RaquelDFS/Cantina-da-Honestidade-1.0.0.git
 ```
 
 Acesse a pasta do projeto:
-
 ```powershell
 cd Cantina-da-Honestidade-1.0.0
 ```
@@ -81,13 +81,11 @@ cd Cantina-da-Honestidade-1.0.0
 O ambiente virtual permite instalar as dependências do projeto separadamente de outros projetos Python.
 
 Execute:
-
 ```powershell
 py -m venv .venv
 ```
 
 Ative o ambiente virtual:
-
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
@@ -97,13 +95,11 @@ Quando ativado, o terminal apresentará `(.venv)` antes do caminho da pasta.
 ### 4.3. Instalar as dependências
 
 Com o ambiente virtual ativado, execute:
-
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
 O arquivo `requirements.txt` contém:
-
 ```text
 streamlit
 mysql-connector-python
@@ -126,21 +122,15 @@ A senha do MySQL deve ser informada por meio da variável de ambiente `MYSQL_PAS
 ### 5.1. Configurar a senha
 
 No PowerShell, execute:
-
 ```powershell
-$senhaSegura = Read-Host "Digite a senha do MySQL" -AsSecureString
-
-$env:MYSQL_PASSWORD = [System.Net.NetworkCredential]::new(
-    "",
-    $senhaSegura
-).Password
+$env:MYSQL_PASSWORD = Read-Host "Digite a senha do MySQL"
 ```
 
-A senha não será exibida durante a digitação.
+A senha será exibida durante a digitação. Evite compartilhá-la ou mostrar a tela enquanto a informa.
 
-A variável ficará disponível na sessão atual do PowerShell.
+A variável ficará disponível apenas no terminal PowerShell atual. Execute a aplicação nesse mesmo terminal.
 
-**Importante:** ao abrir outro terminal, será necessário configurar novamente a variável.
+**Importante:** se abrir outro terminal ou reiniciar o PowerShell, será necessário informar a senha novamente.
 
 Não coloque senhas pessoais diretamente nos arquivos do projeto nem envie credenciais ao GitHub.
 
@@ -149,12 +139,10 @@ Não coloque senhas pessoais diretamente nos arquivos do projeto nem envie crede
 O arquivo `database/inicializar.py` é responsável pela inicialização do banco e pela conexão utilizada pela aplicação.
 
 A configuração de conexão deve utilizar a variável de ambiente:
-
 ```python
 import os
 import mysql.connector
 from pathlib import Path
-
 config = {
     "host": "localhost",
     "user": "root",
@@ -164,14 +152,13 @@ config = {
 
 Essa configuração permite que cada integrante utilize sua própria senha do MySQL sem precisar modificar o código.
 
-**Atenção:** a leitura de `MYSQL_PASSWORD` precisa estar presente na versão compartilhada de `database/inicializar.py`. Enquanto essa correção não for integrada ao repositório, a instalação por clonagem poderá exigir esse ajuste manual.
+**Atenção:** a leitura de `MYSQL_PASSWORD` foi incluída na branch `feature/thiago-documentacao-instalacao` (PR #9). Se a alteração ainda não tiver sido integrada à branch utilizada na instalação, essa configuração poderá não funcionar. Confirme a versão do código antes de prosseguir.
 
 ## 6. Inicialização do banco de dados
 
 O arquivo `database/schema.sql` contém as instruções SQL necessárias para criar o banco de dados e suas tabelas.
 
 O banco utilizado pelo sistema é:
-
 ```text
 cantina_honestidade
 ```
@@ -201,7 +188,6 @@ A criação da estrutura foi validada em um banco de testes separado, utilizando
 ## 7. Executar a aplicação
 
 Com o ambiente virtual ativado e a senha do MySQL configurada, execute:
-
 ```powershell
 python -m streamlit run app.py
 ```
@@ -209,7 +195,6 @@ python -m streamlit run app.py
 Aguarde a inicialização.
 
 O Streamlit informará o endereço local para acessar a aplicação pelo navegador, geralmente:
-
 ```text
 http://localhost:8501
 ```
@@ -223,7 +208,6 @@ Caso ocorra algum erro de conexão, verifique se o MySQL Server está em execuç
 O cadastro público do sistema permite criar usuários com perfil `cliente`.
 
 Para realizar o primeiro acesso administrativo, foi desenvolvido o script:
-
 ```text
 database/criar_admin_inicial.py
 ```
@@ -235,41 +219,30 @@ Esse script permite cadastrar o primeiro administrador diretamente no banco de d
 Abra outro terminal PowerShell na pasta principal do projeto.
 
 Ative o ambiente virtual:
-
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
 Configure o banco de dados:
-
 ```powershell
 $env:MYSQL_DATABASE = "cantina_honestidade"
 ```
 
 Configure a senha do MySQL:
-
 ```powershell
-$senhaSegura = Read-Host "Digite a senha do MySQL" -AsSecureString
-
-$env:MYSQL_PASSWORD = [System.Net.NetworkCredential]::new(
-    "",
-    $senhaSegura
-).Password
+$env:MYSQL_PASSWORD = Read-Host "Digite a senha do MySQL"
 ```
 
 ### 8.2. Executar o cadastro
 
 Execute:
-
 ```powershell
 python -m database.criar_admin_inicial
 ```
 
 O programa solicitará:
-
 ```text
 === Cadastro do primeiro administrador ===
-
 Nome:
 E-mail:
 Matricula (7 numeros):
@@ -287,7 +260,6 @@ O script verifica se já existe um usuário com perfil `administrador`.
 Caso já exista, um novo administrador não será criado por esse procedimento.
 
 Se o cadastro for realizado corretamente, será exibida a mensagem:
-
 ```text
 Administrador cadastrado com sucesso!
 ```
@@ -306,13 +278,11 @@ O sistema utilizará a função `autenticar_usuario()` para validar as credencia
 ## 9. Encerrar a aplicação
 
 Para interromper o Streamlit, volte ao terminal em que a aplicação está em execução e pressione:
-
 ```text
 Ctrl + C
 ```
 
 Para desativar o ambiente virtual, execute:
-
 ```powershell
 deactivate
 ```
@@ -331,7 +301,6 @@ Verifique se:
 ### Erro ao importar bibliotecas
 
 Verifique se o ambiente virtual está ativado e execute novamente:
-
 ```powershell
 python -m pip install -r requirements.txt
 ```
@@ -354,7 +323,6 @@ Se já houver um administrador, o script informará essa condição e não reali
 ## 11. Organização do projeto
 
 A aplicação está organizada nas seguintes pastas e arquivos:
-
 ```text
 Cantina-da-Honestidade-1.0.0/
 |
