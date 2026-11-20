@@ -21,6 +21,7 @@ from views.cliente_adicionar_credito import tela_cliente_adicionar_credito
 from views.admin_produto_editar import tela_admin_produto_editar
 from views.gerente_estoque_movimentar import tela_gerente_estoque_movimentar
 from views.admin_Mestoque_visualizar import tela_admin_estoque_visualizar
+from views.admin_usuarios import tela_admin_usuarios
 from views.gerente_usuarios_visualizar import tela_gerente_usuarios_visualizar
 import time
 
@@ -77,6 +78,54 @@ if st.session_state.usuario is None:
         if usuario:
             st.session_state.usuario = usuario
             st.session_state.pagina = "inicio"
+
+
+# P04 - Revalidar o usuário que já possui uma sessão aberta
+if st.session_state.usuario is not None:
+
+    id_usuario = st.session_state.usuario["id_usuario"]
+
+    conexao = conectar()
+
+    if conexao is None:
+        st.error("Não foi possível validar a sessão. Tente novamente.")
+        st.stop()
+
+    try:
+        cursor = conexao.cursor(dictionary=True)
+
+        try:
+            cursor.execute(
+                """
+                SELECT id_usuario, nome, email, perfil, matricula
+                FROM usuarios
+                WHERE id_usuario = %s
+                  AND status = 'ativo'
+                """,
+                (id_usuario,),
+            )
+
+            usuario_atualizado = cursor.fetchone()
+
+        finally:
+            cursor.close()
+
+    finally:
+        conexao.close()
+
+    if usuario_atualizado is None:
+
+        cookies.remove("id_usuario")
+
+        st.session_state.usuario = None
+        st.session_state.pagina = "login"
+
+        st.warning("Sua sessão foi encerrada porque sua conta está inativa.")
+
+        st.stop()
+
+    else:
+        st.session_state.usuario = usuario_atualizado
 
 
 menu_lateral(cookies)
@@ -203,6 +252,13 @@ elif st.session_state.pagina == "admin_estoque_visualizar":
     else:
         st.error("Acesso não autorizado.")
 
+elif st.session_state.pagina == "admin_usuarios":
+
+    if (
+        st.session_state.usuario is not None
+        and st.session_state.usuario["perfil"] == "administrador"
+    ):
+        tela_admin_usuarios()
 elif st.session_state.pagina == "gerente_usuarios_visualizar":
 
     if (
