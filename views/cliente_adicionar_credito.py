@@ -4,10 +4,6 @@ from views.mensagens import avisar, mostrar_aviso
 from controllers.validacoes import converter_valor, formatar_moeda
 
 
-# Limite por depósito, para evitar erro de digitação (ex.: 5000 em vez de 50).
-VALOR_MAXIMO_DEPOSITO = 500
-
-
 def tela_cliente_adicionar_credito():
     """
     Permite que o cliente logado adicione crédito à própria carteira.
@@ -46,8 +42,7 @@ def tela_cliente_adicionar_credito():
         valor_informado = st.text_input(
             "Valor do depósito (R$)",
             placeholder="Ex.: 50,00",
-            max_chars=10,
-            help=f"Valor entre R$ 0,01 e {formatar_moeda(VALOR_MAXIMO_DEPOSITO)}."
+            max_chars=10
         )
         descricao = st.text_input(
             "Descrição (opcional)",
@@ -71,12 +66,6 @@ def tela_cliente_adicionar_credito():
 
     if valor <= 0:
         st.error("Informe um valor maior que zero.")
-        return
-
-    if valor > VALOR_MAXIMO_DEPOSITO:
-        st.error(
-            f"O valor máximo por depósito é {formatar_moeda(VALOR_MAXIMO_DEPOSITO)}."
-        )
         return
 
     conexao = None
