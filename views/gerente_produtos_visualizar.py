@@ -1,9 +1,3 @@
-# import streamlit as st
-
-
-# def tela_gerente_produtos_visualizar():
-#     st.write("Ver produtos aqio")
-
 import streamlit as st
 from database.inicializar import conectar
 from views.filtros_produtos import filtros_produtos
@@ -118,12 +112,12 @@ def tela_gerente_produtos_visualizar():
         colunas[7].write(produto["fornecedor_atual"] or "-")
         colunas[8].write(produto["status"])
 
+        # O gerente não edita o cadastro, ele movimenta o estoque
         if colunas[9].button(
-            "Editar",
-            key=f"editar_produto_{produto['id_produto']}"
+            "Movimentar",
+            key=f"movimentar_produto_{produto['id_produto']}"
         ):
-            st.session_state["produto_id"] = produto["id_produto"]
-            st.session_state["pagina"] = "produto_editar"
+            st.session_state["pagina"] = "gerente_estoque_movimentar"
             st.rerun()
 
         # Informações complementares

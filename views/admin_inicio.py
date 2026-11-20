@@ -1,4 +1,3 @@
-
 import streamlit as st
 from database.inicializar import conectar
 
@@ -19,7 +18,7 @@ def tela_admin_inicio():
 
     st.divider()
 
-    st.subheader("Gerenciamento - Falta fazer")
+    st.subheader("Gerenciamento")
 
     col1, col2 = st.columns(2)
 
@@ -28,7 +27,8 @@ def tela_admin_inicio():
             st.info("Módulo de gerenciamento de usuários em desenvolvimento.")
 
         if st.button("Gerenciar produtos", use_container_width=True):
-            st.info("Módulo de gerenciamento de produtos em desenvolvimento.")
+            st.session_state.pagina = "admin_produtos_visualizar"
+            st.rerun()
 
     with col2:
         if st.button("Gerenciar orçamentos", use_container_width=True):
