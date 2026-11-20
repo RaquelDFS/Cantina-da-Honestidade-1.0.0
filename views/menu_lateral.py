@@ -62,6 +62,15 @@ def menu_lateral(cookies):
                 st.session_state.pagina = "gerente_estoque_movimentar"
                 st.rerun()
 
+            st.subheader("Usuários")
+
+            if st.button(
+                "Consultar usuários",
+                use_container_width=True
+            ):
+                st.session_state.pagina = "gerente_usuarios_visualizar"
+                st.rerun()
+
         # Opções de administrador e gerente
         if usuario["perfil"] in ["administrador", "gerente"]:
 

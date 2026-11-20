@@ -17,6 +17,7 @@ from views.cliente_adicionar_credito import tela_cliente_adicionar_credito
 from views.admin_produto_editar import tela_admin_produto_editar
 from views.gerente_estoque_movimentar import tela_gerente_estoque_movimentar
 from views.admin_Mestoque_visualizar import tela_admin_estoque_visualizar
+from views.gerente_usuarios_visualizar import tela_gerente_usuarios_visualizar
 import time
 
 
@@ -177,5 +178,15 @@ elif st.session_state.pagina == "admin_estoque_visualizar":
         in ["administrador", "gerente"]
     ):
         tela_admin_estoque_visualizar()
+    else:
+        st.error("Acesso não autorizado.")
+
+elif st.session_state.pagina == "gerente_usuarios_visualizar":
+
+    if (
+        st.session_state.usuario
+        and st.session_state.usuario["perfil"] == "gerente"
+    ):
+        tela_gerente_usuarios_visualizar()
     else:
         st.error("Acesso não autorizado.")
