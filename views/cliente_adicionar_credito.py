@@ -1,6 +1,7 @@
 import streamlit as st
-from decimal import Decimal, InvalidOperation
 from database.inicializar import conectar
+from views.mensagens import avisar, mostrar_aviso
+from controllers.validacoes import converter_valor, formatar_moeda
 
 
 def tela_cliente_adicionar_credito():
@@ -35,11 +36,13 @@ def tela_cliente_adicionar_credito():
         return
 
     st.write("Adicione crédito à sua carteira.")
+    mostrar_aviso()
 
     with st.form("form_adicionar_credito"):
         valor_informado = st.text_input(
             "Valor do depósito (R$)",
-            placeholder="Ex.: 50,00"
+            placeholder="Ex.: 50,00",
+            max_chars=10
         )
         descricao = st.text_input(
             "Descrição (opcional)",
@@ -54,16 +57,15 @@ def tela_cliente_adicionar_credito():
     if not enviar:
         return
 
-    # Aceita valores no formato brasileiro (50,00) ou decimal (50.00).
-    try:
-        valor_texto = valor_informado.strip().replace(".", "").replace(",", ".")
-        valor = Decimal(valor_texto).quantize(Decimal("0.01"))
+    # Aceita 50 / 50,00 / 50.00 / 1.250,50 (antes, "50.00" virava 5000).
+    valor = converter_valor(valor_informado)
 
-        if not valor.is_finite() or valor <= 0:
-            st.error("Informe um valor maior que zero.")
-            return
-    except (InvalidOperation, ValueError):
+    if valor is None:
         st.error("Informe um valor válido. Exemplo: 50,00.")
+        return
+
+    if valor <= 0:
+        st.error("Informe um valor maior que zero.")
         return
 
     conexao = None
@@ -134,7 +136,8 @@ def tela_cliente_adicionar_credito():
 
         conexao.commit()
 
-        st.success(f"Crédito de R$ {valor:,.2f} adicionado à sua carteira.")
+        # A mensagem é guardada e mostrada depois do rerun.
+        avisar(f"Crédito de {formatar_moeda(valor)} adicionado à sua carteira.")
 
         # Atualiza a página para exibir o saldo atualizado, caso ele seja
         # apresentado em outro componente da aplicação.
@@ -143,7 +146,8 @@ def tela_cliente_adicionar_credito():
     except Exception as erro:
         if conexao:
             conexao.rollback()
-        st.error(f"Não foi possível adicionar o crédito: {erro}")
+        print(f"Erro ao adicionar crédito: {erro}")
+        st.error("Não foi possível adicionar o crédito. Tente novamente.")
 
     finally:
         if cursor:
