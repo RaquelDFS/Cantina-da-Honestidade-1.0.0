@@ -3,7 +3,7 @@ from database.inicializar import conectar
 
 
 # Produtos com essa quantidade ou menos aparecem no aviso de estoque baixo.
-LIMITE_ESTOQUE_BAIXO = 5
+LIMITE_ESTOQUE_BAIXO = 3
 
 
 def tela_gerente_inicio():
