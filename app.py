@@ -212,3 +212,13 @@ elif st.session_state.pagina == "gerente_usuarios_visualizar":
         tela_gerente_usuarios_visualizar()
     else:
         st.error("Acesso não autorizado.")
+
+else:
+    # Nenhuma rota conhecida: evita deixar a tela em branco.
+    st.warning("Página não encontrada.")
+
+    if st.button("Voltar ao início"):
+        st.session_state.pagina = (
+            "inicio" if st.session_state.usuario else "login"
+        )
+        st.rerun()
