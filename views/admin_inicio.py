@@ -1,4 +1,3 @@
-
 import streamlit as st
 from database.inicializar import conectar
 

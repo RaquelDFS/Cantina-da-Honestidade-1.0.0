@@ -112,7 +112,7 @@ def tela_gerente_produtos_visualizar():
         colunas[7].write(produto["fornecedor_atual"] or "-")
         colunas[8].write(produto["status"])
 
-        # O gerente não edita o cadastro (RN04); ele movimenta o estoque (RN05).
+        # O gerente não edita o cadastro, ele movimenta o estoque
         if colunas[9].button(
             "Movimentar",
             key=f"movimentar_produto_{produto['id_produto']}"
