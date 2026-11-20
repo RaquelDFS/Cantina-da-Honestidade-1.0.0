@@ -1,5 +1,7 @@
-
 import streamlit as st
+
+st.set_page_config(page_title="Cantina da Honestidade", layout="wide")
+
 from streamlit_cookies_controller import CookieController
 from database.inicializar import conectar
 from database.inicializar import inicializar_banco
@@ -8,6 +10,8 @@ from views.cliente_cadastro import tela_cadastro_cliente
 from views.menu_lateral import menu_lateral
 from views.cliente_inicio import tela_cliente_inicio
 from views.cliente_loja import tela_cliente_loja
+from views.cliente_finalizar_compra import tela_cliente_finalizar_compra
+from views.cliente_historico_compras import tela_cliente_historico_compras
 from views.admin_inicio import tela_admin_inicio
 from views.gerente_inicio import tela_gerente_inicio
 from views.produto_cadastro import tela_produto_cadastro
@@ -18,7 +22,6 @@ from views.admin_produto_editar import tela_admin_produto_editar
 from views.gerente_estoque_movimentar import tela_gerente_estoque_movimentar
 from views.admin_Mestoque_visualizar import tela_admin_estoque_visualizar
 import time
-
 
 if "banco_inicializado" not in st.session_state:
 
@@ -55,12 +58,15 @@ if st.session_state.usuario is None:
         conexao = conectar()
         cursor = conexao.cursor(dictionary=True)
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id_usuario, nome, email, perfil, matricula
             FROM usuarios
             WHERE id_usuario = %s
               AND status = 'ativo'
-        """, (id_usuario,))
+            """,
+            (id_usuario,),
+        )
 
         usuario = cursor.fetchone()
 
@@ -139,6 +145,26 @@ elif st.session_state.pagina == "cliente_loja":
     else:
         st.error("Acesso não autorizado.")
 
+elif st.session_state.pagina == "cliente_finalizar_compra":
+
+    if (
+        st.session_state.usuario is not None
+        and st.session_state.usuario["perfil"] == "cliente"
+    ):
+        tela_cliente_finalizar_compra()
+    else:
+        st.error("Acesso não autorizado.")
+
+elif st.session_state.pagina == "cliente_historico_compras":
+
+    if (
+        st.session_state.usuario is not None
+        and st.session_state.usuario["perfil"] == "cliente"
+    ):
+        tela_cliente_historico_compras()
+    else:
+        st.error("Acesso não autorizado.")
+
 elif st.session_state.pagina == "cliente_adicionar_credito":
 
     if (
@@ -161,21 +187,17 @@ elif st.session_state.pagina == "admin_produto_editar":
 
 elif st.session_state.pagina == "gerente_estoque_movimentar":
 
-    if (
-        st.session_state.usuario
-        and st.session_state.usuario["perfil"] == "gerente"
-    ):
+    if st.session_state.usuario and st.session_state.usuario["perfil"] == "gerente":
         tela_gerente_estoque_movimentar()
     else:
         st.error("Acesso não autorizado.")
 
 elif st.session_state.pagina == "admin_estoque_visualizar":
 
-    if (
-        st.session_state.usuario
-        and st.session_state.usuario["perfil"]
-        in ["administrador", "gerente"]
-    ):
+    if st.session_state.usuario and st.session_state.usuario["perfil"] in [
+        "administrador",
+        "gerente",
+    ]:
         tela_admin_estoque_visualizar()
     else:
         st.error("Acesso não autorizado.")

@@ -1,10 +1,8 @@
+import os
 import mysql.connector
 from pathlib import Path
-config = {
-    "host": "localhost",
-    "user": "root",
-    "password": "MYSQL_PASSWORD"
-}
+
+config = {"host": "localhost", "user": "root", "password": os.getenv("MYSQL_PASSWORD")}
 
 
 def inicializar_banco():
@@ -52,10 +50,7 @@ def inicializar_banco():
 def conectar():
 
     try:
-        return mysql.connector.connect(
-            database="cantina_honestidade",
-            **config
-        )
+        return mysql.connector.connect(database="cantina_honestidade", **config)
 
     except mysql.connector.Error as erro:
         print(f"Erro na conexão com o banco: {erro}")
