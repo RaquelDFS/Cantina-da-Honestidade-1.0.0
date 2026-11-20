@@ -50,7 +50,7 @@ def menu_lateral(cookies):
                 st.session_state.pagina = "gerente_produtos_visualizar"
                 st.rerun()
 
-            if st.button("Editar produto", use_container_width=True):
+            if st.button("Movimentar estoque", use_container_width=True):
                 st.session_state.pagina = "gerente_estoque_movimentar"
                 st.rerun()
 
