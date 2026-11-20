@@ -1,6 +1,6 @@
 ﻿# Cantina da Honestidade 1.0.0
 
-Sistema de gestão para a Cantina da Honestidade do SENAI Fraiburgo, com controle de usuários, créditos, compras e movimentações financeiras.
+Sistema de gestão para a Cantina da Honestidade do SENAI Florianópolis, com controle de usuários, créditos, compras e movimentações financeiras.
 
 **Curso:** Superior de Tecnologia em Análise e Desenvolvimento de Sistemas (ADS)
 
@@ -8,35 +8,23 @@ Sistema de gestão para a Cantina da Honestidade do SENAI Fraiburgo, com control
 
 **Unidade Curricular:** Projeto Aplicado II (AEx) - 474830
 
-**Instituição:** SENAI/SC - Fraiburgo
+**Instituição:** SENAI/SC - Florianópolis
 
 ## 1. Contextualização
 
-A Cantina da Honestidade do SENAI/SC – Fraiburgo opera por confiança: os produtos ficam disponíveis e o pagamento é realizado voluntariamente em dinheiro, sem registro tecnológico das operações.
+A Cantina da Honestidade da Unidade SENAI Fraiburgo funciona em um modelo de autoatendimento, no qual os usuários retiram os produtos disponíveis e realizam o pagamento voluntariamente, sem a presença de um atendente.
 
 ### Problema
 
-Não há controle de quais produtos foram retirados, quem comprou, quanto foi pago ou qual o total arrecadado.
-
-Isso permite retiradas sem pagamento, gerando perdas, e impede a consulta ao histórico de compras ou ao saldo por usuário.
-
-O pagamento somente em dinheiro também dificulta situações em que o usuário não possui o valor exato.
+A ausência de um sistema de controle dificulta o registro das compras, o acompanhamento dos pagamentos e a gestão dos produtos.
 
 ### Impacto
 
-A instituição sofre perdas financeiras e enfrenta dificuldades para acompanhar os resultados da cantina.
-
-Os usuários, por sua vez, não possuem uma ferramenta para consultar seus gastos ou acompanhar o saldo disponível.
-
-O mercado já oferece soluções semelhantes, como carteiras digitais, pagamentos por QR Code e relatórios de movimentações, demonstrando a possibilidade de utilizar recursos tecnológicos nesse contexto.
+A falta de controle pode gerar prejuízos financeiros, inconsistências no estoque e dificuldade para acompanhar o consumo e a arrecadação da cantina, comprometendo sua organização e sustentabilidade.
 
 ### Justificativa
 
-O problema é real e mensurável na instituição.
-
-A utilização da tecnologia permite preservar o conceito de honestidade enquanto acrescenta recursos de controle, como carteira virtual e registro de compras.
-
-O objetivo é reduzir perdas, aumentar a transparência e tornar o processo mais prático para usuários e administradores.
+A implementação de um sistema de gerenciamento busca modernizar o funcionamento da cantina, automatizando o registro das compras, o controle de estoque e a gestão de créditos dos usuários. Dessa forma, pretende-se reduzir perdas, facilitar os pagamentos e proporcionar maior transparência, praticidade e eficiência na administração da Cantina da Honestidade.
 
 ## 2. Tecnologias utilizadas
 
@@ -53,58 +41,59 @@ O sistema utiliza as seguintes tecnologias:
 
 Antes de instalar o projeto, é necessário possuir:
 
-- Python 3 instalado.
-- MySQL Server 8 instalado e em execução.
-- Git instalado.
-- Visual Studio Code (recomendado).
-
-Também é necessário conhecer a senha do usuário `root` do MySQL.
-
-Os comandos apresentados neste documento utilizam o ****PowerShell do Windows****.
+- Python 3.10 ou superior
+- MySQL Server
+- Git
+- Visual Studio Code (recomendado) ou outra IDE
+- Terminal: CMD ou PowerShell (Windows), Terminal (Linux/macOS)
+- Conexão com a internet para clonar o repositório e instalar dependências.
 
 ## 4. Instalação do projeto
 
 ### 4.1. Clonar o repositório
 
-Abra o PowerShell e execute:
-```powershell
-git clone https://github.com/RaquelDFS/Cantina-da-Honestidade-1.0.0.git
-```
+Abra o terminal e execute:
 
-Acesse a pasta do projeto:
-```powershell
+git clone https://github.com/RaquelDFS/Cantina-da-Honestidade-1.0.0.git
+
+Acesse a pasta do projeto pelo terminal:
+
 cd Cantina-da-Honestidade-1.0.0
-```
 
 ### 4.2. Criar o ambiente virtual
 
 O ambiente virtual permite instalar as dependências do projeto separadamente de outros projetos Python.
 
 Execute:
-```powershell
-py -m venv .venv
-```
+Windows:
+py -m venv venv
+
+
+Linux/macOS:
+python3 -m venv venv
 
 Ative o ambiente virtual:
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
+Windows (CMD):
+venv\Scripts\activate
+
+
+Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+
+
+Linux/macOS:
+source venv/bin/activate
+
 
 Quando ativado, o terminal apresentará `(.venv)` antes do caminho da pasta.
 
 ### 4.3. Instalar as dependências
 
-Com o ambiente virtual ativado, execute:
-```powershell
-python -m pip install -r requirements.txt
-```
+Com o ambiente virtual ativado, execute no seu terminal:
+pip install -r requirements.txt
 
-O arquivo `requirements.txt` contém:
-```text
-streamlit
-mysql-connector-python
-streamlit-cookies-controller
-```
+
+Isso instalará as bibliotecas necessárias para o funcionamento do projeto.
 
 ## 5. Configuração do MySQL
 
@@ -119,251 +108,65 @@ O sistema utiliza o MySQL local com as seguintes configurações:
 
 A senha do MySQL deve ser informada por meio da variável de ambiente `MYSQL_PASSWORD`.
 
-### 5.1. Configurar a senha
+### 5.1. Configurar o banco
+Configure as variáveis de ambiente para informar o banco de dados e a senha de acesso.
 
-No PowerShell, execute:
-```powershell
-$env:MYSQL_PASSWORD = Read-Host "Digite a senha do MySQL"
-```
+Windows:
+set MYSQL_DATABASE=cantina_honestidade
+set MYSQL_PASSWORD=sua_senha_mysql
 
-A senha será exibida durante a digitação. Evite compartilhá-la ou mostrar a tela enquanto a informa.
 
-A variável ficará disponível apenas no terminal PowerShell atual. Execute a aplicação nesse mesmo terminal.
+Linux/macOS:
+export MYSQL_DATABASE=cantina_honestidade
+export MYSQL_PASSWORD="sua_senha_mysql"
 
-**Importante:** se abrir outro terminal ou reiniciar o PowerShell, será necessário informar a senha novamente.
 
-Não coloque senhas pessoais diretamente nos arquivos do projeto nem envie credenciais ao GitHub.
+Substitua sua_senha_mysql pela senha configurada no MySQL.
 
-### 5.2. Configuração da conexão Python
-
-O arquivo `database/inicializar.py` é responsável pela inicialização do banco e pela conexão utilizada pela aplicação.
-
-A configuração de conexão deve utilizar a variável de ambiente:
-```python
-import os
-import mysql.connector
-from pathlib import Path
-config = {
-    "host": "localhost",
-    "user": "root",
-    "password": os.getenv("MYSQL_PASSWORD")
-}
-```
-
-Essa configuração permite que cada integrante utilize sua própria senha do MySQL sem precisar modificar o código.
-
-**Atenção:** a leitura de `MYSQL_PASSWORD` foi incluída na branch `feature/thiago-documentacao-instalacao` (PR #9). Se a alteração ainda não tiver sido integrada à branch utilizada na instalação, essa configuração poderá não funcionar. Confirme a versão do código antes de prosseguir.
-
-## 6. Inicialização do banco de dados
-
-O arquivo `database/schema.sql` contém as instruções SQL necessárias para criar o banco de dados e suas tabelas.
-
-O banco utilizado pelo sistema é:
-```text
-cantina_honestidade
-```
-
-A aplicação possui uma função chamada `inicializar_banco()`, localizada em `database/inicializar.py`.
-
-Essa função é chamada automaticamente pelo arquivo `app.py` durante a inicialização da aplicação.
-
-Portanto, após configurar a conexão MySQL, não é necessário executar manualmente cada comando SQL do schema.
-
-As tabelas previstas são:
-
-1. usuarios
-2. carteiras
-3. produtos
-4. vendas
-5. itens_venda
-6. movimentacoes_estoque
-7. historico_alteracoes_produto
-8. movimentacoes_carteira
-9. orcamentos
-
-A criação da estrutura foi validada em um banco de testes separado, utilizando MySQL 8.0.
-
-**Observação:** a inicialização utiliza instruções `CREATE TABLE IF NOT EXISTS`. Esse procedimento cria tabelas inexistentes, mas não substitui um processo de atualização de estruturas já existentes.
-
-## 7. Executar a aplicação
-
-Com o ambiente virtual ativado e a senha do MySQL configurada, execute:
-```powershell
-python -m streamlit run app.py
-```
-
-Aguarde a inicialização.
-
-O Streamlit informará o endereço local para acessar a aplicação pelo navegador, geralmente:
-```text
-http://localhost:8501
-```
-
-Na primeira execução, a aplicação tentará inicializar o banco de dados automaticamente.
-
-Caso ocorra algum erro de conexão, verifique se o MySQL Server está em execução e se a variável `MYSQL_PASSWORD` foi configurada corretamente.
-
-## 8. Criar o primeiro administrador
-
-O cadastro público do sistema permite criar usuários com perfil `cliente`.
+## 6. Criar o primeiro administrador
 
 Para realizar o primeiro acesso administrativo, foi desenvolvido o script:
-```text
 database/criar_admin_inicial.py
-```
+Esse script permite cadastrar o primeiro administrador diretamente no banco de dados, utilizando a função de geração de hash de senha.
 
-Esse script permite cadastrar o primeiro administrador diretamente no banco de dados, utilizando a função de geração de hash de senha já existente no projeto.
+### 6.1. Criando o primeiro administrador
+Com o ambiente virtual ativado e as variáveis configuradas, execute:
+py -m database.criar_admin_inicial
 
-### 8.1. Preparar o terminal
 
-Abra outro terminal PowerShell na pasta principal do projeto.
+No Linux/macOS, caso necessário, substitua py por python3.
 
-Ative o ambiente virtual:
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-Configure o banco de dados:
-```powershell
-$env:MYSQL_DATABASE = "cantina_honestidade"
-```
-
-Configure a senha do MySQL:
-```powershell
-$env:MYSQL_PASSWORD = Read-Host "Digite a senha do MySQL"
-```
-
-### 8.2. Executar o cadastro
-
-Execute:
-```powershell
-python -m database.criar_admin_inicial
-```
-
-O programa solicitará:
-```text
+O sistema solicitará:
 === Cadastro do primeiro administrador ===
+
 Nome:
 E-mail:
-Matricula (7 numeros):
+Matrícula (7 números):
 Senha (10 a 20 caracteres):
-```
 
-Preencha os dados respeitando as seguintes regras:
 
+Preencha os dados respeitando as regras:
 - Nome e e-mail obrigatórios.
 - Matrícula com exatamente 7 números.
-- Senha com 10 a 20 caracteres.
-
-O script verifica se já existe um usuário com perfil `administrador`.
-
-Caso já exista, um novo administrador não será criado por esse procedimento.
-
-Se o cadastro for realizado corretamente, será exibida a mensagem:
-```text
+- Senha entre 10 e 20 caracteres.
+Se tudo estiver correto, será exibida a mensagem:
 Administrador cadastrado com sucesso!
-```
 
-### 8.3. Primeiro acesso
+## 7. Iniciar o sistema
+Para iniciar a aplicação, execute:
+streamlit run app.py
 
-Após cadastrar o administrador, acesse a aplicação Streamlit.
 
-Na tela de login, informe:
+O sistema será iniciado e o endereço de acesso será exibido no terminal, normalmente:
 
-- A matrícula cadastrada.
-- A senha definida durante o cadastro.
+http://localhost:8501
 
-O sistema utilizará a função `autenticar_usuario()` para validar as credenciais e identificar o perfil do usuário.
+Acesse o endereço pelo navegador para utilizar a Cantina da Honestidade.
 
-## 9. Encerrar a aplicação
-
-Para interromper o Streamlit, volte ao terminal em que a aplicação está em execução e pressione:
-```text
-Ctrl + C
-```
-
-Para desativar o ambiente virtual, execute:
-```powershell
+## 8. Finalizar o sistema
+Para encerrar a aplicação:
+1. Volte ao terminal onde o Streamlit está executando.
+2. Pressione Ctrl + C.
+3. Aguarde o encerramento.
+Para desativar o ambiente virtual:
 deactivate
-```
-
-## 10. Problemas comuns
-
-### Erro de conexão com MySQL
-
-Verifique se:
-
-- O MySQL Server está em execução.
-- A senha do usuário `root` está correta.
-- A variável `MYSQL_PASSWORD` foi configurada.
-- O arquivo `database/inicializar.py` utiliza essa variável.
-
-### Erro ao importar bibliotecas
-
-Verifique se o ambiente virtual está ativado e execute novamente:
-```powershell
-python -m pip install -r requirements.txt
-```
-
-### O administrador não consegue fazer login
-
-Confira se:
-
-- A matrícula foi digitada corretamente.
-- A senha corresponde à cadastrada.
-- O administrador foi criado no mesmo banco utilizado pela aplicação.
-- O usuário está com status `ativo`.
-
-### Administrador já cadastrado
-
-O script de inicialização permite criar o primeiro administrador somente quando ainda não existe um usuário com esse perfil.
-
-Se já houver um administrador, o script informará essa condição e não realizará outro cadastro.
-
-## 11. Organização do projeto
-
-A aplicação está organizada nas seguintes pastas e arquivos:
-```text
-Cantina-da-Honestidade-1.0.0/
-|
-|-- controllers/
-|   |-- usuario_controller.py
-|   |-- ...
-|
-|-- database/
-|   |-- conexao.py
-|   |-- inicializar.py
-|   |-- criar_admin_inicial.py
-|   |-- schema.sql
-|
-|-- models/
-|
-|-- views/
-|
-|-- app.py
-|-- requirements.txt
-|-- README.md
-|-- .gitignore
-```
-
-**controllers:** contém funções responsáveis pelas operações e regras da aplicação.
-
-**database:** contém a configuração de conexão, inicialização do banco, schema SQL e script de criação do administrador.
-
-**models:** contém arquivos relacionados à organização dos dados do sistema.
-
-**views:** contém as telas e componentes de interface desenvolvidos com Streamlit.
-
-**app.py:** arquivo principal responsável pela execução da aplicação.
-
-**requirements.txt:** lista as bibliotecas necessárias.
-
-**README.md:** apresenta o projeto e orienta sua instalação e execução.
-
-## 12. Considerações finais
-
-A Cantina da Honestidade é um projeto acadêmico desenvolvido no curso de Tecnologia em Análise e Desenvolvimento de Sistemas do SENAI/SC – Fraiburgo, na unidade curricular Projeto Aplicado II.
-
-O sistema busca aplicar os conhecimentos adquiridos durante a graduação no desenvolvimento de uma solução para uma necessidade real da instituição.
-
-A aplicação utiliza Python, Streamlit e MySQL, com organização de código em diferentes módulos e versionamento por meio do GitHub.

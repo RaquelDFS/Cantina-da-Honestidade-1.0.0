@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS cantina_honestidade;
 USE cantina_honestidade;
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
