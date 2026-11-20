@@ -4,21 +4,13 @@ from database.inicializar import conectar
 
 def tela_gerente_estoque_movimentar():
 
-    # ==========================================
-    # 1. IDENTIFICAÇÃO E PERMISSÃO
-    # ==========================================
-
-    st.title("Movimentação de Estoque")
+    st.title("Gerenciar Estoque")
 
     usuario = st.session_state.get("usuario")
 
     if not usuario or usuario.get("perfil") != "gerente":
         st.error("Acesso não autorizado.")
         return
-
-    # ==========================================
-    # 2. MENSAGEM APÓS MOVIMENTAÇÃO
-    # ==========================================
 
     resultado_movimentacao = st.session_state.pop(
         "resultado_movimentacao_estoque", None
@@ -33,16 +25,13 @@ def tela_gerente_estoque_movimentar():
         st.write(
             f"**Quantidade movimentada:** " f"{resultado_movimentacao['quantidade']}"
         )
-        st.write(f"**Novo estoque:** " f"{resultado_movimentacao['novo_estoque']}")
+        st.write(
+            f"**Novo estoque:** " f"{resultado_movimentacao['novo_estoque']}")
 
         st.toast(
             "Movimentação registrada com sucesso!",
             icon="✅",
         )
-
-    # ==========================================
-    # 3. BUSCAR PRODUTOS
-    # ==========================================
 
     conexao = conectar()
 
@@ -83,10 +72,6 @@ def tela_gerente_estoque_movimentar():
 
     produtos_por_id = {produto["id_produto"]: produto for produto in produtos}
 
-    # ==========================================
-    # 4. SELEÇÃO DO PRODUTO
-    # ==========================================
-
     st.subheader("Produto")
 
     ids_produtos = list(produtos_por_id.keys())
@@ -108,15 +93,12 @@ def tela_gerente_estoque_movimentar():
 
     produto = produtos_por_id[id_produto]
 
-    st.write(f"**Estoque atual:** " f"{produto['quantidade_estoque']} unidades")
+    st.write(
+        f"**Estoque atual:** " f"{produto['quantidade_estoque']} unidades")
 
     st.write(f"**Status:** {produto['status'].capitalize()}")
 
     st.divider()
-
-    # ==========================================
-    # 5. TIPO DE MOVIMENTAÇÃO
-    # ==========================================
 
     st.subheader("Dados da movimentação")
 
@@ -160,10 +142,6 @@ def tela_gerente_estoque_movimentar():
         step=1,
     )
 
-    # ==========================================
-    # 6. DADOS ESPECÍFICOS
-    # ==========================================
-
     fornecedor = None
     valor_compra = None
     custo_total = None
@@ -194,10 +172,6 @@ def tela_gerente_estoque_movimentar():
         max_chars=255,
     )
 
-    # ==========================================
-    # 7. PRÉVIA DO NOVO ESTOQUE
-    # ==========================================
-
     estoque_exibido = produto["quantidade_estoque"]
 
     if tipo == "entrada":
@@ -223,10 +197,6 @@ def tela_gerente_estoque_movimentar():
 
     if estoque_previsto < 0:
         st.warning("A quantidade informada é maior que o estoque disponível.")
-
-    # ==========================================
-    # 8. REGISTRAR MOVIMENTAÇÃO
-    # ==========================================
 
     if st.button(
         "Registrar movimentação",
@@ -258,7 +228,6 @@ def tela_gerente_estoque_movimentar():
 
         try:
 
-            # Bloqueia o produto durante a movimentação.
             cursor.execute(
                 """
                 SELECT
@@ -281,7 +250,6 @@ def tela_gerente_estoque_movimentar():
 
             estoque_atual = produto_atual["quantidade_estoque"]
 
-            # Valida o saldo atualizado dentro da transação.
             if tipo == "saída" and quantidade > estoque_atual:
                 st.warning(
                     "Estoque insuficiente. "
@@ -290,13 +258,11 @@ def tela_gerente_estoque_movimentar():
                 conexao.rollback()
                 return
 
-            # Calcula o novo estoque.
             if tipo == "entrada":
                 novo_estoque = estoque_atual + quantidade
             else:
                 novo_estoque = estoque_atual - quantidade
 
-            # Atualiza o status conforme o estoque.
             novo_status = produto_atual["status"]
             novo_motivo = produto_atual["motivo_inativacao"]
 
@@ -308,7 +274,6 @@ def tela_gerente_estoque_movimentar():
                 novo_status = "ativo"
                 novo_motivo = None
 
-            # Registra a movimentação no histórico.
             cursor.execute(
                 """
                 INSERT INTO movimentacoes_estoque (
@@ -337,7 +302,6 @@ def tela_gerente_estoque_movimentar():
                 ),
             )
 
-            # Atualiza o saldo do produto.
             cursor.execute(
                 """
                 UPDATE produtos
@@ -357,7 +321,6 @@ def tela_gerente_estoque_movimentar():
 
             conexao.commit()
 
-            # Guarda o resultado para exibir após atualizar a tela.
             st.session_state["resultado_movimentacao_estoque"] = {
                 "estoque_anterior": estoque_atual,
                 "quantidade": quantidade,

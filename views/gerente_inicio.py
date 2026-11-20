@@ -1,7 +1,6 @@
 import streamlit as st
 from database.inicializar import conectar
-
-
+from views.admin_Mestoque_visualizar import tela_admin_estoque_visualizar
 # Produtos com essa quantidade ou menos aparecem no aviso de estoque baixo.
 LIMITE_ESTOQUE_BAIXO = 3
 
@@ -28,33 +27,13 @@ def tela_gerente_inicio():
 
     st.divider()
 
-    st.subheader("Atalhos")
+    st.subheader("Movimentação de estoque")
+    tela_admin_estoque_visualizar()
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Consultar produtos", use_container_width=True):
-            st.session_state.pagina = "gerente_produtos_visualizar"
-            st.rerun()
-
-        if st.button("Movimentar estoque", use_container_width=True):
-            st.session_state.pagina = "gerente_estoque_movimentar"
-            st.rerun()
-
-    with col2:
-        if st.button("Histórico de movimentações", use_container_width=True):
-            st.session_state.pagina = "admin_estoque_visualizar"
-            st.rerun()
-
-        st.button(
-            "Consultar vendas",
-            use_container_width=True,
-            disabled=True,
-            help="Disponível quando o módulo de relatórios (P07) for concluído."
-        )
+    st.write("Aqui vai ficar a tabela de movimentação de estoque.")
+    st.write("Que quando estiver aqui de fato, o botão na lateral tem que sumir.")
 
 
-# Lista os produtos com estoque baixo ou zerado (os que mais precisam de reposição).
 def mostrar_estoque_baixo():
     conexao = conectar()
 

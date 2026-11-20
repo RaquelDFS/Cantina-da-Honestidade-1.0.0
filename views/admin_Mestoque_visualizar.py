@@ -1,4 +1,3 @@
-
 import streamlit as st
 from database.inicializar import conectar
 from datetime import date, timedelta
@@ -6,21 +5,14 @@ from datetime import date, timedelta
 
 def tela_admin_estoque_visualizar():
 
-    # ==========================================
-    # 1. IDENTIFICAÇÃO E PERMISSÃO
-    # ==========================================
-
     st.title("Histórico de Movimentações de Estoque")
+    st.caption("Aqui fica um botão de baixar relatório?")
 
     usuario = st.session_state.usuario
 
     if usuario is None or usuario["perfil"] not in ["administrador", "gerente"]:
         st.error("Acesso não autorizado.")
         return
-
-    # ==========================================
-    # 2. FILTROS
-    # ==========================================
 
     st.subheader("Filtros")
 
@@ -53,10 +45,6 @@ def tela_admin_estoque_visualizar():
 
     st.divider()
 
-    # ==========================================
-    # 3. VALIDAR FILTROS
-    # ==========================================
-
     if len(periodo) != 2:
         st.warning("Selecione uma data inicial e uma data final.")
         return
@@ -70,10 +58,6 @@ def tela_admin_estoque_visualizar():
     if not motivos:
         st.info("Selecione pelo menos um motivo para visualizar as movimentações.")
         return
-
-    # ==========================================
-    # 4. CONSULTAR MOVIMENTAÇÕES
-    # ==========================================
 
     conexao = conectar()
 
@@ -133,10 +117,6 @@ def tela_admin_estoque_visualizar():
     finally:
         cursor.close()
         conexao.close()
-
-    # ==========================================
-    # 5. EXIBIR RESULTADOS
-    # ==========================================
 
     st.subheader("Movimentações registradas")
 

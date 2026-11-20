@@ -1,5 +1,6 @@
 import streamlit as st
 from database.inicializar import conectar
+from views.admin_Mestoque_visualizar import tela_admin_estoque_visualizar
 
 
 def tela_admin_inicio():
@@ -18,23 +19,23 @@ def tela_admin_inicio():
 
     st.divider()
 
-    st.subheader("Gerenciamento")
+    st.subheader("Financeiro")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("Gerenciar usuários", use_container_width=True):
-            st.info("Módulo de gerenciamento de usuários em desenvolvimento.")
-
-        if st.button("Gerenciar produtos", use_container_width=True):
-            st.session_state.pagina = "admin_produtos_visualizar"
-            st.rerun()
+        st.write("Aqui vai ficar o orçamento")
 
     with col2:
-        if st.button("Gerenciar orçamentos", use_container_width=True):
-            st.info("Módulo de gerenciamento de orçamentos em desenvolvimento.")
+        st.write("Aqui vai ficar o gasto do mês")
 
-        if st.button("Visualizar relatórios", use_container_width=True):
-            st.info("Módulo de relatórios em desenvolvimento.")
+    with col3:
+        st.write("Aqui vai ficar a arrecadação do mês")
+
+    st.caption("Aqui fica um filtro de data para baixar ")
+    st.caption("Aqui fica um botão de baixar relatório")
+    st.write("Aqui vai ficar a tabela de data | orçamento | vendas | saídas (geral)(em reais) | Saldo final. (Esse é o relatório)")
 
     st.divider()
+
+    tela_admin_estoque_visualizar()

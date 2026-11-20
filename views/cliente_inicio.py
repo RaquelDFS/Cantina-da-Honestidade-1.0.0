@@ -10,6 +10,7 @@ def tela_cliente_inicio():
 
     st.write(f"Bem-vindo(a), {usuario['nome']}!")
     st.write(f"Matrícula: {usuario['matricula']}")
+    st.write("Aqui vai ficar um botão de histórico de compras.")
 
     conexao = conectar()
 
@@ -36,3 +37,5 @@ def tela_cliente_inicio():
         st.error("Não foi possível consultar o saldo da carteira.")
 
     st.divider()
+    st.write("Aqui vai ficar direto a Loja.")
+    st.write("Então vamos tirar a loja do menu lateral e colocar um botão de perfil que só vai mostrar as informações pessoais dele, nada mais.")

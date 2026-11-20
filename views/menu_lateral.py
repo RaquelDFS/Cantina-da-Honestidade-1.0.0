@@ -34,7 +34,6 @@ def menu_lateral(cookies):
                 st.session_state.pagina = "admin_produtos_visualizar"
                 st.rerun()
 
-            # P04 - Gestão de usuários
             st.subheader("Usuários")
 
             if st.button("Gerenciar usuários", use_container_width=True):
@@ -50,7 +49,7 @@ def menu_lateral(cookies):
                 st.session_state.pagina = "gerente_produtos_visualizar"
                 st.rerun()
 
-            if st.button("Movimentar estoque", use_container_width=True):
+            if st.button("Gerenciar estoque", use_container_width=True):
                 st.session_state.pagina = "gerente_estoque_movimentar"
                 st.rerun()
 
@@ -61,15 +60,6 @@ def menu_lateral(cookies):
                 use_container_width=True
             ):
                 st.session_state.pagina = "gerente_usuarios_visualizar"
-                st.rerun()
-
-        # Opções de administrador e gerente
-        if usuario["perfil"] in ["administrador", "gerente"]:
-
-            st.subheader("Estoque")
-
-            if st.button("Movimentações de estoque", use_container_width=True):
-                st.session_state.pagina = "admin_estoque_visualizar"
                 st.rerun()
 
         # Opções exclusivas de cliente
