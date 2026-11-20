@@ -22,6 +22,7 @@ from views.admin_produto_editar import tela_admin_produto_editar
 from views.gerente_estoque_movimentar import tela_gerente_estoque_movimentar
 from views.admin_Mestoque_visualizar import tela_admin_estoque_visualizar
 from views.admin_usuarios import tela_admin_usuarios
+from views.gerente_usuarios_visualizar import tela_gerente_usuarios_visualizar
 import time
 
 if "banco_inicializado" not in st.session_state:
@@ -258,5 +259,12 @@ elif st.session_state.pagina == "admin_usuarios":
         and st.session_state.usuario["perfil"] == "administrador"
     ):
         tela_admin_usuarios()
+elif st.session_state.pagina == "gerente_usuarios_visualizar":
+
+    if (
+        st.session_state.usuario
+        and st.session_state.usuario["perfil"] == "gerente"
+    ):
+        tela_gerente_usuarios_visualizar()
     else:
         st.error("Acesso não autorizado.")

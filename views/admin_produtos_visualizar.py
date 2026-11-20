@@ -1,6 +1,7 @@
 
 import streamlit as st
 from database.inicializar import conectar
+from views.filtros_produtos import filtros_produtos
 
 
 def tela_admin_produtos_visualizar():
@@ -57,7 +58,12 @@ def tela_admin_produtos_visualizar():
         st.info("Nenhum produto cadastrado.")
         return
 
-    st.write(f"**Total de produtos:** {len(produtos)}")
+    # Busca e filtros
+    produtos = filtros_produtos(produtos, prefixo="admin_produtos")
+
+    if not produtos:
+        st.info("Nenhum produto encontrado com esses filtros.")
+        return
 
     st.divider()
 

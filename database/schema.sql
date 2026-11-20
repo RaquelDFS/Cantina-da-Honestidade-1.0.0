@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     perfil ENUM('administrador', 'gerente', 'cliente') NOT NULL,
     status ENUM('ativo', 'inativo') NOT NULL,
     matricula VARCHAR(7) NOT NULL,
+    motivo_inativacao VARCHAR(255) NULL,
+
     CONSTRAINT chk_usuario_nome CHECK (CHAR_LENGTH(TRIM(nome)) > 0),
     CONSTRAINT chk_usuario_matricula CHECK (matricula REGEXP '^[0-9]{7}$')
 );
