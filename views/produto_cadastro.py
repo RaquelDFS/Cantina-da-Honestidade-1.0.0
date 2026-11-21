@@ -1,5 +1,6 @@
 
 import streamlit as st
+
 from database.inicializar import conectar
 from controllers.validacoes import TAMANHO_FORNECEDOR, TAMANHO_NOME_PRODUTO
 
@@ -19,7 +20,10 @@ def tela_produto_cadastro():
 
     st.divider()
 
-    # Informações do produto
+    # ==========================================
+    # 1. INFORMAÇÕES DO PRODUTO
+    # ==========================================
+
     st.subheader("Informações do produto")
 
     nome = st.text_input(
@@ -27,7 +31,12 @@ def tela_produto_cadastro():
         max_chars=TAMANHO_NOME_PRODUTO,
         placeholder="Ex.: Café 250g"
     )
-    descricao = st.text_area("Descrição", max_chars=500)
+
+    descricao = st.text_area(
+        "Descrição",
+        max_chars=500
+    )
+
     fornecedor = st.text_input(
         "Fornecedor atual *",
         max_chars=TAMANHO_FORNECEDOR,
@@ -36,7 +45,10 @@ def tela_produto_cadastro():
 
     st.divider()
 
-    # Informações financeiras e estoque
+    # ==========================================
+    # 2. INFORMAÇÕES FINANCEIRAS E ESTOQUE
+    # ==========================================
+
     st.subheader("Informações financeiras e estoque")
 
     col1, col2, col3 = st.columns(3)
@@ -55,11 +67,14 @@ def tela_produto_cadastro():
         percentual = st.number_input(
             "Percentual de contribuição (%) *",
             min_value=0.0,
-            max_value=100.0,
-            help="Entre 0% e 100%. O preço mínimo é calculado automaticamente.",
+            max_value=999.99,
             value=0.0,
             step=0.5,
             format="%.2f",
+            help=(
+                "Informe um percentual entre 0% e 999,99%. "
+                "Valores acima de 100% são permitidos."
+            ),
             key="percentual"
         )
 
@@ -72,7 +87,7 @@ def tela_produto_cadastro():
             key="quantidade"
         )
 
-    # Cálculo automático
+    # Cálculo automático do preço mínimo
     preco_minimo = valor_compra + (valor_compra * percentual / 100)
 
     st.metric(
@@ -82,7 +97,10 @@ def tela_produto_cadastro():
 
     st.divider()
 
-    # Cadastro
+    # ==========================================
+    # 3. CADASTRO
+    # ==========================================
+
     if st.button("Cadastrar produto", use_container_width=True):
 
         if not nome.strip():
@@ -93,8 +111,11 @@ def tela_produto_cadastro():
             st.error("O valor de compra deve ser maior que zero.")
             return
 
-        if percentual < 0:
-            st.error("O percentual não pode ser negativo.")
+        if percentual < 0 or percentual > 999.99:
+            st.error(
+                "O percentual de contribuição deve estar "
+                "entre 0% e 999,99%."
+            )
             return
 
         if quantidade <= 0:
@@ -102,7 +123,9 @@ def tela_produto_cadastro():
             return
 
         if not fornecedor.strip():
-            st.error("O fornecedor é obrigatório para registrar a entrada inicial.")
+            st.error(
+                "O fornecedor é obrigatório para registrar a entrada inicial."
+            )
             return
 
         status = "ativo"
@@ -181,12 +204,18 @@ def tela_produto_cadastro():
             # 3. Confirmar as duas operações
             conexao.commit()
 
-            st.success(f"Produto '{nome.strip()}' cadastrado com sucesso!")
+            st.success(
+                f"Produto '{nome.strip()}' cadastrado com sucesso!"
+            )
 
         except Exception as erro:
             conexao.rollback()
             print(f"Erro ao cadastrar produto: {erro}")
-            st.error("Não foi possível cadastrar o produto. Confira os dados e tente novamente.")
+
+            st.error(
+                "Não foi possível cadastrar o produto. "
+                "Confira os dados e tente novamente."
+            )
 
         finally:
             if cursor:

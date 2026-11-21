@@ -1,5 +1,6 @@
 
 import streamlit as st
+
 from database.inicializar import conectar
 from views.mensagens import avisar
 from controllers.validacoes import TAMANHO_FORNECEDOR, TAMANHO_NOME_PRODUTO
@@ -77,7 +78,10 @@ def tela_admin_produto_editar():
         valor_compra = st.number_input(
             "Valor de compra unitário (R$)",
             min_value=0.01,
-            value=max(0.01, float(produto["valor_compra_unitario_atual"])),
+            value=max(
+                0.01,
+                float(produto["valor_compra_unitario_atual"])
+            ),
             step=0.01,
             format="%.2f"
         )
@@ -85,16 +89,24 @@ def tela_admin_produto_editar():
         percentual = st.number_input(
             "Percentual de contribuição (%)",
             min_value=0.0,
-            max_value=100.0,
-            value=min(100.0, float(produto["percentual_contribuicao"])),
+            value=max(
+                0.0,
+                float(produto["percentual_contribuicao"])
+            ),
             step=0.5,
-            format="%.2f"
+            format="%.2f",
+            help=(
+                "Informe um percentual igual ou superior a 0%. "
+                "Valores acima de 100% são permitidos."
+            )
         )
 
         # Cálculo automático do preço final
         preco_final = valor_compra * (1 + percentual / 100)
 
-        st.info(f"**Preço final calculado: R$ {preco_final:.2f}**")
+        st.info(
+            f"**Preço final calculado: R$ {preco_final:.2f}**"
+        )
 
         # ==========================================
         # 4. ESTOQUE E FORNECEDOR
@@ -106,7 +118,10 @@ def tela_admin_produto_editar():
         quantidade = st.number_input(
             "Quantidade em estoque",
             min_value=0,
-            value=max(0, int(produto["quantidade_estoque"])),
+            value=max(
+                0,
+                int(produto["quantidade_estoque"])
+            ),
             step=1
         )
 
@@ -159,10 +174,19 @@ def tela_admin_produto_editar():
                 st.warning("O nome do produto é obrigatório.")
 
             elif valor_compra <= 0:
-                st.warning("O valor de compra deve ser maior que zero.")
+                st.warning(
+                    "O valor de compra deve ser maior que zero."
+                )
+
+            elif percentual < 0:
+                st.warning(
+                    "O percentual de contribuição não pode ser negativo."
+                )
 
             elif quantidade == 0 and status == "ativo":
-                st.warning("Um produto sem estoque não pode ficar ativo.")
+                st.warning(
+                    "Um produto sem estoque não pode ficar ativo."
+                )
 
             else:
 
@@ -208,7 +232,9 @@ def tela_admin_produto_editar():
                     conexao.commit()
 
                     # Mostrada na listagem, depois do rerun.
-                    avisar(f"Produto '{nome.strip()}' atualizado com sucesso!")
+                    avisar(
+                        f"Produto '{nome.strip()}' atualizado com sucesso!"
+                    )
 
                     del st.session_state["id_produto_editar"]
 
@@ -218,7 +244,11 @@ def tela_admin_produto_editar():
                 except Exception as erro:
                     conexao.rollback()
                     print(f"Erro ao atualizar produto: {erro}")
-                    st.error("Não foi possível salvar as alterações. Tente novamente.")
+
+                    st.error(
+                        "Não foi possível salvar as alterações. "
+                        "Tente novamente."
+                    )
 
     finally:
         cursor.close()
