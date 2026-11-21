@@ -1,4 +1,4 @@
-﻿# Cantina da Honestidade 1.0.0
+# Cantina da Honestidade 1.0.0
 
 Sistema de gestão para a Cantina da Honestidade do SENAI Florianópolis, com controle de usuários, créditos, compras e movimentações financeiras.
 
@@ -170,3 +170,53 @@ Para encerrar a aplicação:
 3. Aguarde o encerramento.
 Para desativar o ambiente virtual:
 deactivate
+
+## 9. Gestão financeira e orçamentária (P06)
+
+A aplicação disponibiliza funcionalidades de acompanhamento financeiro e gestão de orçamentos para o perfil administrador.
+
+### 9.1. Gestão de orçamentos
+
+Na opção **Financeiro > Gerenciar orçamentos**, o administrador pode:
+
+- Cadastrar um orçamento mensal, informando mês, ano e valor.
+- Consultar os orçamentos cadastrados.
+- Editar o valor de um orçamento existente.
+- Evitar o cadastro duplicado de orçamento para o mesmo mês e ano.
+
+Cada orçamento corresponde a um período mensal.
+
+### 9.2. Indicadores financeiros
+
+O painel administrativo apresenta indicadores para o mês e ano selecionados:
+
+- **Orçamento:** valor definido para o período.
+- **Gastos:** soma dos custos das movimentações de entrada de estoque com motivo `reposicao`.
+- **Vendas:** soma dos valores totais das vendas registradas no período.
+- **Saldo orçamentário:** orçamento menos gastos com reposições.
+- **Percentual utilizado:** gastos divididos pelo orçamento, multiplicados por 100.
+- **Resultado financeiro:** vendas menos gastos com reposições.
+
+O resultado financeiro é um indicador simplificado: não considera todas as despesas operacionais da cantina. O valor de vendas representa as vendas registradas, não necessariamente os valores efetivamente recebidos.
+
+### 9.3. Relatório financeiro mensal
+
+O administrador pode selecionar um intervalo de meses e anos para consultar os indicadores financeiros de cada período.
+
+O relatório permite comparar orçamentos, gastos, vendas, saldos e resultados financeiros entre diferentes meses.
+
+### 9.4. Relatório financeiro diário
+
+O administrador pode selecionar um intervalo de datas para consultar:
+
+- Quantidade e valor das vendas por dia.
+- Quantidade e custo das reposições por dia.
+- Resultado financeiro diário.
+
+O relatório também apresenta os dias sem movimentação, permitindo acompanhar todo o intervalo selecionado.
+
+### 9.5. Exportação para Excel
+
+Os relatórios mensal e diário podem ser exportados em arquivos `.xlsx`, utilizando a biblioteca `openpyxl`.
+
+A biblioteca está incluída no arquivo `requirements.txt` e é instalada junto com as demais dependências do projeto.
