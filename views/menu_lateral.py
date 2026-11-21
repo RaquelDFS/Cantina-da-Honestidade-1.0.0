@@ -1,3 +1,4 @@
+
 import streamlit as st
 
 
@@ -42,6 +43,16 @@ def menu_lateral(cookies):
 
             if st.button("Gerenciar usuários", use_container_width=True):
                 st.session_state.pagina = "admin_usuarios"
+                st.rerun()
+
+            # P06 - Gestão de orçamentos
+            st.subheader("Financeiro")
+
+            if st.button(
+                "Gerenciar orçamentos",
+                use_container_width=True
+            ):
+                st.session_state.pagina = "admin_orcamentos"
                 st.rerun()
 
         # Opções exclusivas de gerente

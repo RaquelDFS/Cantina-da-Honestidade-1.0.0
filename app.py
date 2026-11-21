@@ -1,4 +1,5 @@
 import time
+from views.admin_orcamentos import tela_admin_orcamentos
 from views.geral_perfil import tela_perfil
 from views.gerente_usuarios_visualizar import tela_gerente_usuarios_visualizar
 from views.admin_usuarios_gerenciar import tela_admin_usuarios
@@ -274,6 +275,15 @@ elif st.session_state.pagina == "gerente_usuarios_visualizar":
     else:
         st.error("Acesso não autorizado.")
 
+elif st.session_state.pagina == "admin_orcamentos":
+
+    if (
+        st.session_state.usuario is not None
+        and st.session_state.usuario["perfil"] == "administrador"
+    ):
+        tela_admin_orcamentos()
+    else:
+        st.error("Acesso não autorizado.")
 else:
     # evita deixar a tela em branco.
     st.warning("Página não encontrada.")
