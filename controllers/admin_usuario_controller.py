@@ -1,6 +1,14 @@
+
 import mysql.connector
 
 from controllers.usuario_controller import gerar_hash
+from controllers.validacoes import (
+    TAMANHO_EMAIL,
+    email_valido,
+    matricula_valida,
+    nome_usuario_valido,
+    senha_valida,
+)
 
 
 def verificar_administrador(cursor, id_administrador):
@@ -50,33 +58,40 @@ def cadastrar_usuario_administrativo(
         if not verificar_administrador(cursor, id_administrador):
             return False, "Acesso não autorizado."
 
-        nome = nome.strip()
+        valido, mensagem = nome_usuario_valido(nome)
+        if not valido:
+            return False, mensagem
+
+        valido, mensagem = senha_valida(senha)
+        if not valido:
+            return False, mensagem
+
+        if not isinstance(email, str):
+            return False, "Informe um e-mail válido."
+
         email = email.strip().lower()
-        matricula = matricula.strip()
 
-        if not nome or not email or not matricula or not senha:
-            return False, "Preencha todos os campos."
+        if len(email) > TAMANHO_EMAIL or not email_valido(email):
+            return False, "Informe um e-mail válido."
 
-        if len(nome) > 100 or len(email) > 150:
-            return False, "Nome ou e-mail excede o limite permitido."
+        if not matricula_valida(matricula):
+            return False, "A matrícula deve conter exatamente 7 números."
 
         if perfil not in ("administrador", "gerente"):
             return False, "Perfil inválido para cadastro administrativo."
 
-        if not matricula.isascii() or not matricula.isdigit() or len(matricula) != 7:
-            return False, "A matrícula deve conter 7 números."
-
-        if len(senha) < 10 or len(senha) > 20:
-            return False, "A senha deve ter entre 10 e 20 caracteres."
-
         cursor.execute(
-            "SELECT id_usuario FROM usuarios WHERE matricula = %s", (matricula,)
+            "SELECT id_usuario FROM usuarios WHERE matricula = %s",
+            (matricula,),
         )
 
         if cursor.fetchone():
             return False, "Matrícula já cadastrada."
 
-        cursor.execute("SELECT id_usuario FROM usuarios WHERE email = %s", (email,))
+        cursor.execute(
+            "SELECT id_usuario FROM usuarios WHERE email = %s",
+            (email,),
+        )
 
         if cursor.fetchone():
             return False, "E-mail já cadastrado."
@@ -93,12 +108,17 @@ def cadastrar_usuario_administrativo(
         conexao.commit()
         return True, "Usuário cadastrado com sucesso!"
 
-    except mysql.connector.IntegrityError:
+    except mysql.connector.IntegrityError as erro:
         conexao.rollback()
-        return False, "E-mail ou matrícula já cadastrados."
 
-    except mysql.connector.Error:
+        if erro.errno == 1062:
+            return False, "E-mail ou matrícula já cadastrados."
+
+        return False, "Não foi possível concluir o cadastro."
+
+    except mysql.connector.Error as erro:
         conexao.rollback()
+        print(f"Erro ao cadastrar usuário: {erro}")
         return False, "Erro ao cadastrar usuário."
 
     finally:
@@ -130,7 +150,9 @@ def alterar_status_usuario(conexao, id_administrador, id_usuario, novo_status):
             FOR UPDATE
             """)
 
-        administradores_ativos = {item["id_usuario"] for item in cursor.fetchall()}
+        administradores_ativos = {
+            item["id_usuario"] for item in cursor.fetchall()
+        }
 
         if id_administrador not in administradores_ativos:
             conexao.rollback()

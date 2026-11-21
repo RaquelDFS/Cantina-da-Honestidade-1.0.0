@@ -6,12 +6,11 @@ import secrets
 import base64
 
 from controllers.validacoes import (
-    SENHA_MAXIMO,
-    SENHA_MINIMO,
     TAMANHO_EMAIL,
-    TAMANHO_NOME_USUARIO,
     email_valido,
     matricula_valida,
+    nome_usuario_valido,
+    senha_valida,
 )
 
 
@@ -55,33 +54,28 @@ def verificar_senha(senha, senha_armazenada):
 
 
 def cadastrar_cliente(conexao, nome, email, senha, matricula):
-
     cursor = conexao.cursor()
 
     try:
-        nome = nome.strip()
+        valido, mensagem = nome_usuario_valido(nome)
+        if not valido:
+            return False, mensagem
+
+        valido, mensagem = senha_valida(senha)
+        if not valido:
+            return False, mensagem
+
+        if not isinstance(email, str):
+            return False, "Informe um e-mail válido."
+
         email = email.strip().lower()
-        matricula = matricula.strip()
-
-        if not nome or not email:
-            return False, "Preencha todos os campos."
-
-        if len(nome) > TAMANHO_NOME_USUARIO:
-            return False, f"O nome pode ter no máximo {TAMANHO_NOME_USUARIO} caracteres."
 
         if len(email) > TAMANHO_EMAIL or not email_valido(email):
             return False, "Informe um e-mail válido. Exemplo: nome@email.com"
 
-        if len(senha) < SENHA_MINIMO or len(senha) > SENHA_MAXIMO:
-            return False, (
-                f"A senha deve ter entre {SENHA_MINIMO} e {SENHA_MAXIMO} caracteres."
-            )
-
         if not matricula_valida(matricula):
-            return False, "A matrícula deve conter 7 números."
+            return False, "A matrícula deve conter exatamente 7 números."
 
-        # A coluna matricula não é UNIQUE no banco, mas o login é feito
-        # pela matrícula. Então não pode existir duas pessoas com a mesma.
         cursor.execute(
             "SELECT 1 FROM usuarios WHERE matricula = %s",
             (matricula,)
@@ -94,7 +88,7 @@ def cadastrar_cliente(conexao, nome, email, senha, matricula):
 
         sql_usuario = """
             INSERT INTO usuarios
-            (nome, email, senha, perfil, status, matricula)
+                (nome, email, senha, perfil, status, matricula)
             VALUES (%s, %s, %s, 'cliente', 'ativo', %s)
         """
 
@@ -116,13 +110,16 @@ def cadastrar_cliente(conexao, nome, email, senha, matricula):
 
         return True, "Cadastro realizado com sucesso!"
 
-    except mysql.connector.IntegrityError:
+    except mysql.connector.IntegrityError as erro:
         conexao.rollback()
-        return False, "Este e-mail já está cadastrado."
+
+        if erro.errno == 1062:
+            return False, "E-mail ou matrícula já cadastrados."
+
+        return False, "Não foi possível concluir o cadastro."
 
     except mysql.connector.Error as erro:
         conexao.rollback()
-        # O detalhe técnico vai para o terminal; o usuário vê uma mensagem clara.
         print(f"Erro ao cadastrar cliente: {erro}")
         return False, "Não foi possível concluir o cadastro. Tente novamente."
 
@@ -131,7 +128,6 @@ def cadastrar_cliente(conexao, nome, email, senha, matricula):
 
 
 def autenticar_usuario(conexao, matricula, senha):
-
     cursor = conexao.cursor()
 
     try:

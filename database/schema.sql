@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     senha VARCHAR(255) NOT NULL,
     perfil ENUM('administrador', 'gerente', 'cliente') NOT NULL,
     status ENUM('ativo', 'inativo') NOT NULL,
-    matricula VARCHAR(7) NOT NULL,
+    matricula VARCHAR(7) NOT NULL UNIQUE,
     motivo_inativacao VARCHAR(255) NULL,
 
     CONSTRAINT chk_usuario_nome CHECK (CHAR_LENGTH(TRIM(nome)) > 0),

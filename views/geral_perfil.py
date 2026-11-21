@@ -1,6 +1,14 @@
+
+import mysql.connector
 import streamlit as st
+
 from database.inicializar import conectar
 from controllers.usuario_controller import gerar_hash, verificar_senha
+from controllers.validacoes import (
+    TAMANHO_EMAIL,
+    email_valido,
+    senha_valida,
+)
 
 
 def tela_perfil():
@@ -15,14 +23,22 @@ def tela_perfil():
     st.write("Consulte seus dados cadastrais e gerencie suas informações.")
 
     conexao = conectar()
+
+    if not conexao:
+        st.error("Não foi possível conectar ao banco de dados.")
+        return
+
     cursor = conexao.cursor(dictionary=True)
 
     try:
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id_usuario, nome, email, perfil, status, matricula
             FROM usuarios
             WHERE id_usuario = %s
-        """, (usuario["id_usuario"],))
+            """,
+            (usuario["id_usuario"],),
+        )
 
         dados_usuario = cursor.fetchone()
 
@@ -34,19 +50,31 @@ def tela_perfil():
 
         st.text_input("Nome", value=dados_usuario["nome"], disabled=True)
         st.text_input(
-            "Matrícula", value=dados_usuario["matricula"], disabled=True)
+            "Matrícula",
+            value=dados_usuario["matricula"],
+            disabled=True,
+        )
         st.text_input(
-            "Perfil", value=dados_usuario["perfil"].capitalize(), disabled=True)
+            "Perfil",
+            value=dados_usuario["perfil"].capitalize(),
+            disabled=True,
+        )
         st.text_input(
-            "Status", value=dados_usuario["status"].capitalize(), disabled=True)
+            "Status",
+            value=dados_usuario["status"].capitalize(),
+            disabled=True,
+        )
 
         if dados_usuario["perfil"] == "cliente":
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT saldo_atual
                 FROM carteiras
                 WHERE id_usuario = %s
-            """, (dados_usuario["id_usuario"],))
+                """,
+                (dados_usuario["id_usuario"],),
+            )
 
             carteira = cursor.fetchone()
 
@@ -55,7 +83,7 @@ def tela_perfil():
             if carteira:
                 st.metric(
                     "Saldo disponível",
-                    f"R$ {carteira['saldo_atual']:.2f}".replace(".", ",")
+                    f"R$ {carteira['saldo_atual']:.2f}".replace(".", ","),
                 )
             else:
                 st.warning("Nenhuma carteira encontrada para este usuário.")
@@ -67,50 +95,52 @@ def tela_perfil():
 
             novo_email = st.text_input(
                 "Novo e-mail",
-                value=dados_usuario["email"]
+                value=dados_usuario["email"],
+                max_chars=TAMANHO_EMAIL,
             )
 
             alterar_email = st.form_submit_button(
                 "Salvar novo e-mail",
-                use_container_width=True
+                use_container_width=True,
             )
 
-            if alterar_email:
+        if alterar_email:
 
-                novo_email = novo_email.strip()
+            novo_email = novo_email.strip().lower()
 
-                if not novo_email:
-                    st.error("Informe um e-mail.")
+            if not email_valido(novo_email):
+                st.error("Informe um e-mail válido.")
 
-                elif novo_email == dados_usuario["email"]:
-                    st.warning("O novo e-mail é igual ao atual.")
+            elif novo_email == dados_usuario["email"]:
+                st.warning("O novo e-mail é igual ao atual.")
 
-                elif "@" not in novo_email or "." not in novo_email.split("@")[-1]:
-                    st.error("Informe um e-mail válido.")
+            else:
+                try:
+                    cursor.execute(
+                        """
+                        UPDATE usuarios
+                        SET email = %s
+                        WHERE id_usuario = %s
+                        """,
+                        (novo_email, dados_usuario["id_usuario"]),
+                    )
 
-                else:
-                    try:
-                        cursor.execute("""
-                            UPDATE usuarios
-                            SET email = %s
-                            WHERE id_usuario = %s
-                        """, (
-                            novo_email,
-                            dados_usuario["id_usuario"]
-                        ))
+                    conexao.commit()
 
-                        conexao.commit()
+                    st.success("E-mail alterado com sucesso!")
+                    st.rerun()
 
-                        st.success("E-mail alterado com sucesso!")
-                        st.rerun()
+                except mysql.connector.IntegrityError as erro:
+                    conexao.rollback()
 
-                    except Exception as erro:
-                        conexao.rollback()
+                    if erro.errno == 1062:
+                        st.error("Este e-mail já está cadastrado.")
+                    else:
+                        st.error("Não foi possível alterar o e-mail.")
 
-                        if getattr(erro, "errno", None) == 1062:
-                            st.error("Este e-mail já está cadastrado.")
-                        else:
-                            st.error(f"Erro ao alterar e-mail: {erro}")
+                except mysql.connector.Error:
+                    conexao.rollback()
+                    st.error("Não foi possível alterar o e-mail.")
 
         st.divider()
         st.subheader("Alterar senha")
@@ -119,56 +149,71 @@ def tela_perfil():
 
             senha_atual = st.text_input(
                 "Senha atual",
-                type="password"
+                type="password",
             )
 
             nova_senha = st.text_input(
                 "Nova senha",
-                type="password"
+                type="password",
             )
 
             confirmar_senha = st.text_input(
                 "Confirmar nova senha",
-                type="password"
+                type="password",
             )
 
             alterar_senha = st.form_submit_button(
                 "Alterar senha",
-                use_container_width=True
+                use_container_width=True,
             )
 
-            if alterar_senha:
+        if alterar_senha:
 
-                if not senha_atual or not nova_senha or not confirmar_senha:
-                    st.error("Preencha todos os campos.")
+            if not senha_atual or not nova_senha or not confirmar_senha:
+                st.error("Preencha todos os campos.")
 
-                elif nova_senha != confirmar_senha:
-                    st.error("A confirmação da nova senha não corresponde.")
+            elif nova_senha != confirmar_senha:
+                st.error("A confirmação da nova senha não corresponde.")
 
-                elif nova_senha == senha_atual:
-                    st.error("A nova senha deve ser diferente da senha atual.")
+            elif nova_senha == senha_atual:
+                st.error("A nova senha deve ser diferente da senha atual.")
+
+            else:
+                valido, mensagem = senha_valida(nova_senha)
+
+                if not valido:
+                    st.error(mensagem)
 
                 else:
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         SELECT senha
                         FROM usuarios
                         WHERE id_usuario = %s
-                    """, (dados_usuario["id_usuario"],))
+                        """,
+                        (dados_usuario["id_usuario"],),
+                    )
 
                     resultado = cursor.fetchone()
 
-                    if resultado and verificar_senha(senha_atual, resultado["senha"]):
+                    if resultado and verificar_senha(
+                        senha_atual,
+                        resultado["senha"],
+                    ):
 
                         senha_hash = gerar_hash(nova_senha)
 
-                        cursor.execute("""
+                        cursor.execute(
+                            """
                             UPDATE usuarios
                             SET senha = %s
                             WHERE id_usuario = %s
-                        """, (
-                            senha_hash,
-                            dados_usuario["id_usuario"]
-                        ))
+                            """,
+                            (
+                                senha_hash,
+                                dados_usuario["id_usuario"],
+                            ),
+                        )
 
                         conexao.commit()
 
@@ -177,8 +222,9 @@ def tela_perfil():
                     else:
                         st.error("A senha atual está incorreta.")
 
-    except Exception as erro:
-        st.error(f"Erro ao carregar perfil: {erro}")
+    except mysql.connector.Error:
+        conexao.rollback()
+        st.error("Erro ao consultar ou atualizar os dados do perfil.")
 
     finally:
         cursor.close()
