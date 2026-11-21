@@ -17,11 +17,14 @@ def tela_cliente_inicio():
     if conexao:
         cursor = conexao.cursor(dictionary=True)
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT saldo_atual
             FROM carteiras
             WHERE id_usuario = %s
-        """, (usuario["id_usuario"],))
+        """,
+            (usuario["id_usuario"],),
+        )
 
         carteira = cursor.fetchone()
 
@@ -49,6 +52,4 @@ def tela_cliente_inicio():
             st.rerun()
 
     st.divider()
-    st.write("Aqui vai ficar direto a Loja.")
-    st.write("Então vamos tirar a loja do menu lateral e colocar um botão de perfil que só vai mostrar as informações pessoais dele, nada mais.")
     tela_cliente_loja()

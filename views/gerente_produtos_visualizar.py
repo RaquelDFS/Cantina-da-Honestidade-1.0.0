@@ -42,7 +42,6 @@ def tela_gerente_produtos_visualizar():
         """)
 
         produtos = cursor.fetchall()
-
         cursor.close()
 
     except Exception as erro:
@@ -79,7 +78,7 @@ def tela_gerente_produtos_visualizar():
         "Estoque",
         "Fornecedor",
         "Status",
-        "Ação"
+        "Ação",
     ]
 
     for coluna, titulo in zip(colunas, titulos):
@@ -96,17 +95,11 @@ def tela_gerente_produtos_visualizar():
         colunas[1].write(produto["nome"])
         colunas[2].write(produto["descricao"] or "-")
 
-        colunas[3].write(
-            f"R$ {produto['valor_compra_unitario_atual']:.2f}"
-        )
+        colunas[3].write(f"R$ {produto['valor_compra_unitario_atual']:.2f}")
 
-        colunas[4].write(
-            f"{produto['percentual_contribuicao']:.2f}%"
-        )
+        colunas[4].write(f"{produto['percentual_contribuicao']:.2f}%")
 
-        colunas[5].write(
-            f"R$ {produto['preco_minimo_contribuicao']:.2f}"
-        )
+        colunas[5].write(f"R$ {produto['preco_minimo_contribuicao']:.2f}")
 
         colunas[6].write(produto["quantidade_estoque"])
         colunas[7].write(produto["fornecedor_atual"] or "-")
@@ -115,16 +108,16 @@ def tela_gerente_produtos_visualizar():
         # O gerente não edita o cadastro, ele movimenta o estoque
         if colunas[9].button(
             "Movimentar",
-            key=f"movimentar_produto_{produto['id_produto']}"
+            key=f"movimentar_produto_{produto['id_produto']}",
         ):
+            st.session_state["id_produto_movimentar"] = produto["id_produto"]
+            st.session_state["produto_movimentacao"] = produto["id_produto"]
             st.session_state["pagina"] = "gerente_estoque_movimentar"
             st.rerun()
 
         # Informações complementares
         if produto["motivo_inativacao"]:
-            with st.expander(
-                f"Motivo da inativação - {produto['nome']}"
-            ):
+            with st.expander(f"Motivo da inativação - {produto['nome']}"):
                 st.write(produto["motivo_inativacao"])
 
         st.divider()
