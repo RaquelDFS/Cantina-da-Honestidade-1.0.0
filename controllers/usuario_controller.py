@@ -166,3 +166,24 @@ def autenticar_usuario(conexao, matricula, senha):
 
     finally:
         cursor.close()
+
+
+def listar_usuarios_gerente(conexao):
+    cursor = conexao.cursor(dictionary=True)
+
+    try:
+        cursor.execute("""
+            SELECT id_usuario, nome, email, matricula, perfil, status, motivo_inativacao
+            FROM usuarios
+            WHERE perfil IN ('cliente', 'gerente')
+            ORDER BY nome, id_usuario
+            """)
+
+        return True, cursor.fetchall()
+
+    except mysql.connector.Error as erro:
+        print(f"Erro ao consultar usuários: {erro}")
+        return False, "Não foi possível carregar os usuários."
+
+    finally:
+        cursor.close()
