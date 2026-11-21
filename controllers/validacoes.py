@@ -1,10 +1,7 @@
-# São só funções que conferem e formatam dados.
-
 import re
 from decimal import Decimal, InvalidOperation
 
 
-# Limites iguais aos do schema.sql
 TAMANHO_NOME_USUARIO = 100
 TAMANHO_EMAIL = 150
 TAMANHO_MATRICULA = 7
@@ -14,22 +11,58 @@ TAMANHO_NOME_PRODUTO = 50
 TAMANHO_FORNECEDOR = 150
 TAMANHO_DESCRICAO_CURTA = 255
 
-# Formato simples de e-mail
+
 _PADRAO_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 def email_valido(email):
-    return bool(email) and bool(_PADRAO_EMAIL.match(email.strip()))
+    return bool(email) and bool(_PADRAO_EMAIL.fullmatch(email.strip()))
 
 
-# True se a matrícula tem exatamente 7 números.
 def matricula_valida(matricula):
-    matricula = (matricula or "").strip()
-    return matricula.isdigit() and len(matricula) == TAMANHO_MATRICULA
+    if not isinstance(matricula, str):
+        return False
+
+    return bool(re.fullmatch(r"[0-9]{7}", matricula))
 
 
-# Converte o valor digitado pelo usuário em decimal com 2 casas
-# Devolve None se o texto não for um número válido
+def nome_usuario_valido(nome):
+    if not isinstance(nome, str):
+        return False, "Informe um nome válido."
+
+    if not nome.strip():
+        return False, "O nome não pode estar vazio."
+
+    if len(nome) > TAMANHO_NOME_USUARIO:
+        return False, (
+            f"O nome pode ter no máximo {TAMANHO_NOME_USUARIO} caracteres."
+        )
+
+    if nome != nome.strip():
+        return False, "O nome não pode começar ou terminar com espaços."
+
+    if "  " in nome:
+        return False, "O nome não pode conter espaços consecutivos."
+
+    return True, ""
+
+
+def senha_valida(senha):
+    if not isinstance(senha, str):
+        return False, "Informe uma senha válida."
+
+    if any(caractere.isspace() for caractere in senha):
+        return False, "A senha não pode conter espaços em branco."
+
+    if len(senha) < SENHA_MINIMO or len(senha) > SENHA_MAXIMO:
+        return False, (
+            f"A senha deve ter entre {SENHA_MINIMO} e "
+            f"{SENHA_MAXIMO} caracteres."
+        )
+
+    return True, ""
+
+
 def converter_valor(texto):
     if texto is None:
         return None
@@ -56,8 +89,8 @@ def converter_valor(texto):
     return valor.quantize(Decimal("0.01"))
 
 
-# Formata no padrão brasileiro
+
 def formatar_moeda(valor):
-    texto = f"{valor:,.2f}"                      # '1,250.50'
+    texto = f"{valor:,.2f}"
     texto = texto.replace(",", "X").replace(".", ",").replace("X", ".")
     return f"R$ {texto}"

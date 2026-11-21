@@ -1,8 +1,16 @@
+
 import os
 import getpass
 import mysql.connector
 
 from controllers.usuario_controller import gerar_hash
+from controllers.validacoes import (
+    TAMANHO_EMAIL,
+    email_valido,
+    matricula_valida,
+    nome_usuario_valido,
+    senha_valida,
+)
 
 
 def criar_admin_inicial():
@@ -14,21 +22,27 @@ def criar_admin_inicial():
 
     print("=== Cadastro do primeiro administrador ===")
 
-    nome = input("Nome: ").strip()
+    nome = input("Nome: ")
     email = input("E-mail: ").strip().lower()
-    matricula = input("Matricula (7 numeros): ").strip()
+    matricula = input("Matricula (7 numeros): ")
     senha = getpass.getpass("Senha (10 a 20 caracteres): ")
 
-    if not nome or not email:
-        print("Nome e e-mail sao obrigatorios.")
+    valido, mensagem = nome_usuario_valido(nome)
+    if not valido:
+        print(mensagem)
         return
 
-    if not matricula.isdigit() or len(matricula) != 7:
-        print("A matricula deve conter 7 numeros.")
+    if len(email) > TAMANHO_EMAIL or not email_valido(email):
+        print("Informe um e-mail valido.")
         return
 
-    if not 10 <= len(senha) <= 20:
-        print("A senha deve ter entre 10 e 20 caracteres.")
+    if not matricula_valida(matricula):
+        print("A matricula deve conter exatamente 7 numeros.")
+        return
+
+    valido, mensagem = senha_valida(senha)
+    if not valido:
+        print(mensagem)
         return
 
     conexao = None
@@ -45,11 +59,30 @@ def criar_admin_inicial():
         cursor = conexao.cursor()
 
         cursor.execute(
-            "SELECT COUNT(*) FROM usuarios WHERE perfil = %s", ("administrador",)
+            "SELECT COUNT(*) FROM usuarios WHERE perfil = %s",
+            ("administrador",),
         )
 
         if cursor.fetchone()[0] > 0:
             print("Ja existe um administrador cadastrado.")
+            return
+
+        cursor.execute(
+            "SELECT 1 FROM usuarios WHERE matricula = %s",
+            (matricula,),
+        )
+
+        if cursor.fetchone():
+            print("Esta matricula ja esta cadastrada.")
+            return
+
+        cursor.execute(
+            "SELECT 1 FROM usuarios WHERE email = %s",
+            (email,),
+        )
+
+        if cursor.fetchone():
+            print("Este e-mail ja esta cadastrado.")
             return
 
         senha_hash = gerar_hash(senha)
@@ -66,6 +99,15 @@ def criar_admin_inicial():
 
         conexao.commit()
         print("Administrador cadastrado com sucesso!")
+
+    except mysql.connector.IntegrityError as erro:
+        if conexao:
+            conexao.rollback()
+
+        if erro.errno == 1062:
+            print("E-mail ou matricula ja cadastrados.")
+        else:
+            print(f"Erro de integridade ao cadastrar administrador: {erro}")
 
     except mysql.connector.Error as erro:
         if conexao:
