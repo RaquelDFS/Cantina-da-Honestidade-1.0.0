@@ -1,5 +1,6 @@
 import streamlit as st
 from database.inicializar import conectar
+from views.cliente_loja import tela_cliente_loja
 
 
 def tela_cliente_inicio():
@@ -10,7 +11,6 @@ def tela_cliente_inicio():
 
     st.write(f"Bem-vindo(a), {usuario['nome']}!")
     st.write(f"Matrícula: {usuario['matricula']}")
-    st.write("Aqui vai ficar um botão de histórico de compras.")
 
     conexao = conectar()
 
@@ -36,6 +36,19 @@ def tela_cliente_inicio():
     else:
         st.error("Não foi possível consultar o saldo da carteira.")
 
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Adicionar crédito", use_container_width=True):
+            st.session_state.pagina = "cliente_adicionar_credito"
+            st.rerun()
+
+    with col2:
+        if st.button("Histórico de compras", use_container_width=True):
+            st.session_state.pagina = "cliente_historico_compras"
+            st.rerun()
+
     st.divider()
     st.write("Aqui vai ficar direto a Loja.")
     st.write("Então vamos tirar a loja do menu lateral e colocar um botão de perfil que só vai mostrar as informações pessoais dele, nada mais.")
+    tela_cliente_loja()

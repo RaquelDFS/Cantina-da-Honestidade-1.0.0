@@ -26,12 +26,8 @@ def tela_gerente_inicio():
     mostrar_estoque_baixo()
 
     st.divider()
-
-    st.subheader("Movimentação de estoque")
+    st.subheader("Movimentação Estoque")
     tela_admin_estoque_visualizar()
-
-    st.write("Aqui vai ficar a tabela de movimentação de estoque.")
-    st.write("Que quando estiver aqui de fato, o botão na lateral tem que sumir.")
 
 
 def mostrar_estoque_baixo():

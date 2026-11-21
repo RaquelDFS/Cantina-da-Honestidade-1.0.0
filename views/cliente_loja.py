@@ -31,10 +31,6 @@ def tela_cliente_loja():
 
     st.caption("Escolha os produtos e acompanhe seu carrinho ao lado.")
 
-    # ==========================================
-    # ESTILO DO CARRINHO
-    # ==========================================
-
     st.markdown(
         """
         <style>
@@ -57,10 +53,6 @@ def tela_cliente_loja():
         """,
         unsafe_allow_html=True,
     )
-
-    # ==========================================
-    # CONSULTAR PRODUTOS
-    # ==========================================
 
     conexao = conectar()
 
@@ -99,10 +91,6 @@ def tela_cliente_loja():
 
         conexao.close()
 
-    # ==========================================
-    # CARRINHO
-    # ==========================================
-
     carrinho = st.session_state.setdefault("carrinho_p01", {})
 
     produtos_por_codigo = {int(produto["id_produto"]): produto for produto in produtos}
@@ -113,14 +101,8 @@ def tela_cliente_loja():
         if produto["status"] == "ativo" and int(produto["quantidade_estoque"]) > 0
     ]
 
-    # Não removemos nem reduzimos automaticamente
-    # os produtos armazenados no carrinho.
 
     coluna_produtos, coluna_carrinho = st.columns([1.8, 1], gap="large")
-
-    # ==========================================
-    # PRODUTOS DISPONÍVEIS
-    # ==========================================
 
     with coluna_produtos:
 
@@ -206,9 +188,6 @@ def tela_cliente_loja():
 
                         st.rerun()
 
-    # ==========================================
-    # PAINEL DO CARRINHO
-    # ==========================================
 
     with coluna_carrinho:
 
@@ -226,9 +205,6 @@ def tela_cliente_loja():
 
                 pedido_valido = True
 
-                # ==================================
-                # ITENS COM ROLAGEM INDEPENDENTE
-                # ==================================
 
                 with st.container(height=320, border=False):
 
@@ -272,17 +248,10 @@ def tela_cliente_loja():
 
                         ativo = produto["status"] == "ativo"
 
-                        # ==================================
-                        # INFORMAÇÕES DO ITEM
-                        # ==================================
 
                         st.markdown(f"**{nome}**")
 
                         st.caption(f"{dinheiro(preco)} por unidade")
-
-                        # ==================================
-                        # QUANTIDADE EDITÁVEL
-                        # ==================================
 
                         chave_quantidade = f"carrinho_quantidade_{codigo}"
 
@@ -330,9 +299,6 @@ def tela_cliente_loja():
 
                         st.caption(f"Subtotal: {dinheiro(subtotal)}")
 
-                        # ==================================
-                        # VALIDAR DISPONIBILIDADE
-                        # ==================================
 
                         if not ativo:
 
@@ -358,9 +324,6 @@ def tela_cliente_loja():
 
                         st.divider()
 
-                # ==================================
-                # RESUMO FINANCEIRO
-                # ==================================
 
                 st.metric("Valor mínimo", dinheiro(total_minimo))
 
@@ -390,9 +353,7 @@ def tela_cliente_loja():
 
                 st.write(f"**Total previsto: {dinheiro(total)}**")
 
-                # ==================================
-                # CONTINUAR PARA CONFIRMAÇÃO
-                # ==================================
+
 
                 if not pedido_valido:
 
