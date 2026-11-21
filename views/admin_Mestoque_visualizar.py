@@ -6,7 +6,6 @@ from datetime import date, timedelta
 def tela_admin_estoque_visualizar():
 
     st.title("Histórico de Movimentações de Estoque")
-    st.caption("Aqui fica um botão de baixar relatório?")
 
     usuario = st.session_state.usuario
 
@@ -21,18 +20,15 @@ def tela_admin_estoque_visualizar():
     with col_data:
         periodo = st.date_input(
             "Período",
-            value=(
-                date.today() - timedelta(days=30),
-                date.today()
-            ),
-            format="DD/MM/YYYY"
+            value=(date.today() - timedelta(days=30), date.today()),
+            format="DD/MM/YYYY",
         )
 
     motivos_opcoes = {
         "reposicao": "Entrada",
         "venda": "Venda",
         "avaria": "Avaria",
-        "ajuste": "Ajuste"
+        "ajuste": "Ajuste",
     }
 
     with col_motivo:
@@ -40,7 +36,7 @@ def tela_admin_estoque_visualizar():
             "Motivos da movimentação",
             options=list(motivos_opcoes.keys()),
             default=list(motivos_opcoes.keys()),
-            format_func=lambda motivo: motivos_opcoes[motivo]
+            format_func=lambda motivo: motivos_opcoes[motivo],
         )
 
     st.divider()
@@ -101,10 +97,7 @@ def tela_admin_estoque_visualizar():
             ORDER BY m.data_hora DESC
         """
 
-        parametros = [
-            data_inicio,
-            data_fim + timedelta(days=1)
-        ] + motivos
+        parametros = [data_inicio, data_fim + timedelta(days=1)] + motivos
 
         cursor.execute(consulta, parametros)
 
@@ -130,30 +123,28 @@ def tela_admin_estoque_visualizar():
 
     for movimentacao in movimentacoes:
 
-        dados_exibicao.append({
-            "ID": movimentacao["id_movimentacao"],
-            "Produto": movimentacao["produto"],
-            "Responsável": movimentacao["responsavel"],
-            "Tipo": movimentacao["tipo"].capitalize(),
-            "Motivo": motivos_opcoes[movimentacao["motivo"]],
-            "Quantidade": movimentacao["quantidade"],
-            "Valor unitário": (
-                f"R$ {movimentacao['valor_compra_unitario_registrado']:.2f}"
-                if movimentacao["valor_compra_unitario_registrado"] is not None
-                else "-"
-            ),
-            "Custo total": (
-                f"R$ {movimentacao['custo_total']:.2f}"
-                if movimentacao["custo_total"] is not None
-                else "-"
-            ),
-            "Fornecedor": movimentacao["fornecedor"] or "-",
-            "Data e hora": movimentacao["data_hora"].strftime("%d/%m/%Y %H:%M"),
-            "Descrição": movimentacao["descricao"] or "-"
-        })
+        dados_exibicao.append(
+            {
+                "ID": movimentacao["id_movimentacao"],
+                "Produto": movimentacao["produto"],
+                "Responsável": movimentacao["responsavel"],
+                "Tipo": movimentacao["tipo"].capitalize(),
+                "Motivo": motivos_opcoes[movimentacao["motivo"]],
+                "Quantidade": movimentacao["quantidade"],
+                "Valor unitário": (
+                    f"R$ {movimentacao['valor_compra_unitario_registrado']:.2f}"
+                    if movimentacao["valor_compra_unitario_registrado"] is not None
+                    else "-"
+                ),
+                "Custo total": (
+                    f"R$ {movimentacao['custo_total']:.2f}"
+                    if movimentacao["custo_total"] is not None
+                    else "-"
+                ),
+                "Fornecedor": movimentacao["fornecedor"] or "-",
+                "Data e hora": movimentacao["data_hora"].strftime("%d/%m/%Y %H:%M"),
+                "Descrição": movimentacao["descricao"] or "-",
+            }
+        )
 
-    st.dataframe(
-        dados_exibicao,
-        width='stretch',
-        hide_index=True
-    )
+    st.dataframe(dados_exibicao, width="stretch", hide_index=True)
