@@ -62,7 +62,8 @@ def tela_admin_usuarios():
                 "Perfil", ["Todos", "Administrador", "Gerente", "Cliente"]
             )
 
-            filtro_status = st.selectbox("Situação", ["Todos", "Ativo", "Inativo"])
+            filtro_status = st.selectbox(
+                "Situação", ["Todos", "Ativo", "Inativo"])
 
             usuarios_filtrados = []
 
@@ -77,11 +78,13 @@ def tela_admin_usuarios():
                 )
 
                 corresponde_perfil = (
-                    filtro_perfil == "Todos" or item["perfil"] == filtro_perfil.lower()
+                    filtro_perfil == "Todos" or item["perfil"] == filtro_perfil.lower(
+                    )
                 )
 
                 corresponde_status = (
-                    filtro_status == "Todos" or item["status"] == filtro_status.lower()
+                    filtro_status == "Todos" or item["status"] == filtro_status.lower(
+                    )
                 )
 
                 if corresponde_pesquisa and corresponde_perfil and corresponde_status:
@@ -102,7 +105,8 @@ def tela_admin_usuarios():
                         st.write(f"**Matrícula:** {item['matricula']}")
                         st.write(f"**E-mail:** {item['email']}")
                         st.write(f"**Perfil:** {item['perfil'].capitalize()}")
-                        st.write(f"**Situação:** {item['status'].capitalize()}")
+                        st.write(
+                            f"**Situação:** {item['status'].capitalize()}")
 
                     with coluna_acao:
 
@@ -136,19 +140,20 @@ def tela_admin_usuarios():
 
         with aba_cadastro:
 
-            st.subheader("Novo usuário administrativo")
+            st.subheader("Novo usuário")
 
             with st.form("form_usuario_administrativo", clear_on_submit=True):
 
-                nome = st.text_input("Nome completo")
-                email = st.text_input("E-mail")
-                matricula = st.text_input("Matrícula")
+                nome = st.text_input("Nome completo*")
+                email = st.text_input("E-mail*")
+                matricula = st.text_input("Matrícula*")
 
-                perfil = st.selectbox("Perfil", ["Gerente", "Administrador"])
+                perfil = st.selectbox("Perfil*", ["Gerente", "Administrador"])
 
-                senha = st.text_input("Senha", type="password")
+                senha = st.text_input("Senha*", type="password")
 
-                confirmar_senha = st.text_input("Confirmar senha", type="password")
+                confirmar_senha = st.text_input(
+                    "Confirmar senha*", type="password")
 
                 cadastrar = st.form_submit_button(
                     "Cadastrar usuário", use_container_width=True

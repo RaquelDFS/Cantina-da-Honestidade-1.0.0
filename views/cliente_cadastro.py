@@ -15,35 +15,36 @@ from controllers.validacoes import (
 def tela_cadastro_cliente():
 
     st.title("Cantina da Honestidade")
-    st.subheader("Cadastro de cliente")
-    st.caption("Todos os campos são obrigatórios.")
+    st.subheader("Cadastro de usuário")
+    st.caption("Todos os campos são obrigatórios!")
 
     with st.form("form_cadastro"):
 
         nome = st.text_input(
-            "Nome completo",
+            "Nome completo*",
             max_chars=TAMANHO_NOME_USUARIO,
             placeholder="Ex.: Maria da Silva"
         )
         email = st.text_input(
-            "E-mail",
+            "E-mail*",
             max_chars=TAMANHO_EMAIL,
             placeholder="Ex.: maria@email.com"
         )
         matricula = st.text_input(
-            "Matrícula",
+            "Matrícula*",
             max_chars=TAMANHO_MATRICULA,
             placeholder="7 números",
             help="Você vai usar a matrícula para entrar no sistema."
         )
         senha = st.text_input(
-            "Senha",
+            "Senha*",
             type="password",
+            placeholder="entre 10 e 20 caracteres.",
             max_chars=SENHA_MAXIMO,
             help=f"Entre {SENHA_MINIMO} e {SENHA_MAXIMO} caracteres."
         )
         confirmar_senha = st.text_input(
-            "Confirmar senha",
+            "Confirmar senha*",
             type="password",
             max_chars=SENHA_MAXIMO
         )

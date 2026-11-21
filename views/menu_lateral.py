@@ -21,6 +21,10 @@ def menu_lateral(cookies):
             st.session_state.pagina = "inicio"
             st.rerun()
 
+        if st.button("Meu Perfil", use_container_width=True):
+            st.session_state.pagina = "perfil"
+            st.rerun()
+
         # Opções exclusivas de administrador
         if usuario["perfil"] == "administrador":
 
